@@ -1,0 +1,106 @@
+.radio-inputs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    background-color:var(--color-section);
+    box-sizing: border-box;
+    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+    padding: 0.25rem;
+    width: 300px;
+    font-size: 14px;
+    margin: 1% 4%;
+  }
+  
+  .radio-inputs .radio {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+  
+  .radio-inputs .radio input {
+    display: none;
+  }
+  
+  .radio-inputs .radio .name {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: none;
+    padding: .5rem 0;
+    color:var(--color-detailing);
+    transition: all .15s ease-in-out;
+  }
+  
+  .radio-inputs .radio input:checked + .name {
+    background-color:var(--color-text);
+    font-weight: 600;
+  }
+
+  .container{
+    margin: 1% 4%;
+    display: flex;
+    flex-direction: row-reverse;
+  }
+  .custom-button {
+    position: relative;
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-heading);
+    background-color:var(--color-heading);
+    transition: all 0.3s;
+    border-radius: 5px;
+    
+  }
+  
+  .custom-button, .custom-button__icon, .custom-button__text {
+    transition: all 0.3s;
+  }
+  
+  .custom-button .custom-button__text {
+    transform: translateX(30px);
+    color:var(--color-white);
+    font-weight: 600;
+  }
+  
+  .custom-button .custom-button__icon {
+    position: absolute;
+    transform: translateX(109px);
+    height: 100%;
+    width: 39px;
+    background-color:var(--color-heading);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .custom-button .custom-svg {
+    width: 30px;
+    stroke: var(--color-white);
+  }
+  
+  .custom-button:hover {
+    background:var(--color-white);
+  }
+  
+  .custom-button:hover .custom-button__text {
+    color: transparent;
+  }
+  
+  .custom-button:hover .custom-button__icon {
+    width: 148px;
+    transform: translateX(0);
+  }
+  
+  .custom-button:active .custom-button__icon {
+    background-color: var(--color-white);
+  }
+  
+  .custom-button:active {
+    border: 1px solid #fff;
+  }
+  

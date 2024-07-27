@@ -1,0 +1,140 @@
+.section__padding {
+  padding: 4rem 6rem;
+}
+
+.flex__center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app__bg {
+  background-color: var(--color-background);
+}
+
+.app__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100vh;
+  
+}
+
+.app__wrapper_info {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 10%;
+}
+
+
+
+
+
+.p__basic {
+  font-family: var(--basic-font-family);
+  color:var(--color-text);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  line-height: 28px;
+  font-size: 16px;
+   margin: 1rem 1 rem;
+}
+.small__heading {
+  font-size: 40px;
+  font-weight: 400;
+  color: var(--color-heading);
+  font-family: var(--heading-font-family);
+  text-transform: capitalize;
+  margin: 2%;
+  margin-left: 0;
+  margin: 1rem 1 rem;
+}
+.p__heading {
+  font-family: var(--heading-font-family);
+  color: var(--color-heading);
+  font-size: 50px;
+  text-transform: capitalize;
+  margin: 2%;
+  margin-left: 0;
+  margin: 1rem 1 rem;
+  font-weight: 550;
+  
+}
+
+@media screen and (max-width: 1199px) {
+  .section__padding {
+    padding: 4rem 4rem;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .section__padding {
+    padding: 4rem 3rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .section__padding {
+    padding: 3rem 2rem;
+  }
+
+  .app__wrapper {
+    flex-direction: column;
+  }
+
+  
+
+  .p__basic {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .p__heading {
+    font-size: 32px;
+    font-weight: bolder;
+    
+  }
+ 
+}
+
+@media screen and (max-width: 575px) {
+  .section__padding {
+    padding: 2rem 1.5rem;
+  }
+
+
+  .p__basic {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .p__heading {
+    font-size: 24px;
+    line-height: 36px;
+  }
+
+
+}
+
+
+.form-button {
+  color: #717171;
+  font-weight: 600;
+  background: #313131;
+  border: 1px solid #414141;
+  padding: 12px 32px; /* Adjusted padding for button width */
+  font-size: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: var(--basic-font-family);
+}
+
+.form-button:hover {
+  background-color: var(--color-heading);
+  border-color: var(--color-heading);
+  color: var(--color-white);
+}

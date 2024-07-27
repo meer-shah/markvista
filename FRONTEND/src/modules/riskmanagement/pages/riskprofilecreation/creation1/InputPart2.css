@@ -1,0 +1,157 @@
+.app__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--color-background);
+    margin: 0;
+  }
+  
+  .form-container {
+    width: 80%;
+    max-width: 900px; /* Adjusted max width for better centering */
+    background: linear-gradient(var(--color-section), var(--color-section)) padding-box,
+                linear-gradient(145deg, transparent 35%, var(--color-heading), var(--color-detailing)) border-box;
+    border: 2px solid transparent;
+    padding: 32px 24px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    border-radius: 16px;
+    background-size: 200% 100%;
+    animation: gradient 5s ease infinite;
+    margin: auto;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+  
+    50% {
+      background-position: 100% 50%;
+    }
+  
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .main-div {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+   
+  }
+  
+  .additional-group {
+    display: flex;
+    gap: 20px; /* Space between the two inputs */
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: var(--basic-font-family);
+    
+  }
+  
+  .label-tooltip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .label-tooltip .tooltip {
+    background-color: var(--color-detailing);
+    color: var(--color-text);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    font-size: 12px; /* Adjust tooltip font size */
+    position: relative;
+  }
+  
+  .label-tooltip .tooltip::after {
+    content: attr(data-tooltip);
+    visibility: hidden;
+    opacity: 0;
+    width: 200px;
+    background-color: #555;
+    color: var(--color-text);
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the tooltip */
+    left: 50%;
+    margin-left: -100px;
+    transition: opacity 0.3s;
+  }
+  
+  .label-tooltip .tooltip::after::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  .label-tooltip .tooltip:hover::after {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .form-group label {
+    color: var(--color-detailing); /* Changed label color */
+    font-weight: 600;
+    font-size: 14px; /* Adjust label font size */
+    font-family: var(--basic-font-family);
+
+  }
+  
+  .form-group input {
+    padding: 10px 20px; /* Adjusted input padding for smaller height and longer length */
+    border-radius: 8px;
+    color: var(--color-text);
+    background-color: transparent;
+    border: 1px solid #414141;
+    font-family: var(--basic-font-family);
+    font-size: 14px; /* Adjust input font size */
+    
+  }
+  
+  .form-group input::placeholder {
+    opacity: 0.5;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--color-detailing);
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between; /* Adjusted to space between */
+    gap: 20px;
+  }
+  
+
+  

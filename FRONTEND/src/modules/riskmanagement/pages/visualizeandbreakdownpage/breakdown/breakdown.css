@@ -1,0 +1,152 @@
+/* Base styles for .breakdown__app__wrapper and .breakdown__main-div */
+.breakdown__app__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  width: 100%;
+  padding: 0 20px; /* Add padding to the sides for smaller screens */
+  box-sizing: border-box; /* Ensure padding is included in the width */
+  overflow: auto;
+}
+
+.breakdown__main-div {
+  width: 100%;
+  overflow: auto;
+  max-width: 1200px; /* Adjust max-width to allow more space horizontally */
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin: 0 auto; /* Center the main div horizontally */
+  align-items: stretch; /* Make children divs the same height */
+}
+
+/* Styles for .breakdown__first-main-div and .breakdown__second-main-div */
+.breakdown__first-main-div,
+.breakdown__second-main-div {
+  background: var(--color-section);
+  color: var(--color-text);
+  padding: 32px 24px;
+  font-size: 14px;
+  font-family: var(--basic-font-family);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  align-self: stretch; /* Stretch to fill the parent's height */
+}
+
+.breakdown__first-main-div {
+  flex: 0 0 70%; /* Increase the percentage to take more horizontal space */
+  justify-content: space-between;
+}
+
+.breakdown__second-main-div {
+  flex: 0 0 30%; /* Decrease the percentage to take less horizontal space */
+}
+
+/* Styles for form groups and info sections */
+.breakdown__first-main-div .breakdown__form-group,
+.breakdown__second-main-div .breakdown__info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Tooltip styles */
+.breakdown__label-tooltip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.breakdown__label-tooltip .breakdown__tooltip {
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--color-detailing);
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+  background: var(--color-detailing);
+  color: var(--color-white);
+}
+
+.breakdown__label-tooltip .breakdown__tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  background: #555;
+  color: var(--color-text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.breakdown__label-tooltip .breakdown__tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Input styles */
+input[type="number"] {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: transparent;
+  color: var(--color-text);
+  font-family: var(--basic-font-family);
+  font-size: 16px;
+  margin: 0%;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-detailing);
+}
+
+/* Breakdown info styles */
+.breakdown__info {
+  margin-top: 18%;
+  justify-content: space-between;
+  margin-bottom: 0%;
+}
+
+.breakdown__info p {
+  margin: 3%;
+  margin-bottom: 1%;
+  font-size: 20px;
+  color: var(--color-text);
+}
+
+.breakdown__info span {
+  color: var(--color-detailing);
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .breakdown__main-div {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+    gap: 10px; /* Reduce gap between items */
+  }
+
+  .breakdown__first-main-div {
+    flex: 1; /* Take full width on smaller screens */
+    margin-right: 0; /* Remove margin for better spacing */
+  }
+
+  .breakdown__second-main-div {
+    flex: 1; /* Take full width on smaller screens */
+    margin-left: 0; /* Remove margin for better spacing */
+  }
+}

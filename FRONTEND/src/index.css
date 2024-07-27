@@ -1,0 +1,62 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa&family=Rock+Salt&family=Sawarabi+Gothic&family=Tilt+Prism&display=swap');
+
+:root {
+  --heading-font-family: "Orbitron", sans-serif;
+  
+  --basic-font-family: 'Comfortaa', cursive;
+  
+/* green to button [","2B5B4B","","","688BCA"*/
+  
+  --color-section:#272726 ;
+  --color-background:#1F1E1F;
+  --color-text :#E5E7EB; 
+  --color-heading: #1D65F2;
+  --color-white :#ffffff;
+  --color-detailing : #688BCA;
+  --color-profit : #2B5B4B;
+  --color-loss : #5b2b2b;
+
+  /* vibrant changed to button */
+  
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    scroll-behavior: smooth;
+  }
+  
+  a {
+    color: unset;
+    text-decoration: none;
+  }
+  
+  .slide-bottom {
+    -webkit-animation: slide-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+      animation: slide-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  }
+  
+  @-webkit-keyframes slide-bottom {
+    0% {
+      -webkit-transform: translateY(-25%);
+              transform: translateY(-25%);
+    }
+    100% {
+      -webkit-transform: translateY(0);
+              transform: translateY(0);
+    }
+  }
+  
+  @keyframes slide-bottom {
+    0% {
+      -webkit-transform: translateY(-25%);
+              transform: translateY(-25%);
+    }
+    100% {
+      -webkit-transform: translateY(0);
+              transform: translateY(0);
+    }
+  }
+  

@@ -1,0 +1,90 @@
+/* Table.css */
+
+.table-data-wrapper {
+  padding: 20px;
+  background-color: var(--color-background);
+  border-radius: 8px;
+  height: 100vh; /* Full height */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Column layout */
+}
+
+.table-data-form {
+  overflow-x: auto; /* Enable horizontal scrolling for small screens */
+  flex-grow: 1; /* Allow the form to grow and take available space */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Column layout */
+  justify-content: flex-start; /* Align items to the top */
+}
+
+.table-head {
+  border-radius: 8px;
+  background-color: var(--color-detailing);
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0; /* Remove margin to fit body */
+}
+
+.table-body-wrapper {
+ 
+  max-height: 600px; /* Set your desired height */
+  overflow-y: auto; /* Vertical scrollbar */
+}
+
+.table-head th,
+.table-body td {
+  color: var(--color-text);
+  padding: 12px 15px; /* Padding for cells */
+  text-align: left;
+  font-family: var(--basic-font-family);
+  font-size: 14px; /* Smaller font size for rows */
+  width: 150px; /* Set a fixed width for uniformity */
+}
+
+.table-head th {
+  border-radius: 18px;
+  background-color: var(--color-detailing);
+  color: var(--color-text);
+  font-weight: bold;
+  font-size: 16px; /* Slightly larger font size for header */
+}
+
+.table-body tr:nth-child(even) {
+  border-bottom: 1px solid var(--color-detailing);
+  background-color: var(--color-section); /* Zebra striping */
+}
+
+.table-body tr:nth-child(odd) {
+  border-bottom: 1px solid var(--color-detailing);
+  background-color: var(--color-background); /* Zebra striping */
+}
+
+.table-body tr:hover {
+  background-color: #555; /* Highlight row on hover */
+}
+
+
+
+/* Scrollbar styling for WebKit browsers (Chrome, Safari) */
+.table-body-wrapper::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.table-body-wrapper::-webkit-scrollbar-track {
+  background: var(--color-background); /* Background color of the scrollbar track */
+}
+
+.table-body-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--color-detailing); /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.table-body-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #444; /* Darker thumb on hover */
+}
+
+/* Scrollbar styling for Firefox */
+.table-body-wrapper {
+  scrollbar-width: thin; /* Set the scrollbar width */
+  scrollbar-color: var(--color-detailing) var(--color-background); /* Thumb and track colors */
+}
