@@ -41,7 +41,7 @@ import { useParams } from 'react-router-dom';
 import Breakdown from './breakdown/breakdown';
 import AreaChart from './chart/areachart';
 import Tabledata from './visulaize/Table';
-import { generateData } from '../../constants/index';
+
 
 const Main = () => {
   const { id } = useParams();
