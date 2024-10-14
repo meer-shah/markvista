@@ -1,0 +1,86 @@
+.tradeoverview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--color-section);
+}
+
+.additional {
+  font-size: 27px;
+  text-align: center;
+}
+
+.trade-summary-section {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  flex-wrap: wrap; /* Allows wrapping of items in smaller screens */
+}
+
+.trade-summary-item {
+  background-color: var(--color-background);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+  margin: 10px; /* Adjust margin for better spacing */
+  min-width: 250px; /* Ensures each item has a minimum width */
+}
+
+.trade-number {
+  font-size: 25px;
+  margin-bottom: 10px;
+  color: var(--color-detailing);
+}
+
+.trade-heading {
+  font-size: 13px;
+  color: var(--color-white);
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 768px) {
+  .additional {
+    font-size: 22px;
+  }
+
+  .trade-summary-section {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center the items */
+  }
+
+  .trade-summary-item {
+    width: 90%; /* Take most of the screen width on smaller screens */
+    margin: 10px 0; /* Adjust margin to stack items */
+  }
+
+  .trade-number {
+    font-size: 22px; /* Slightly smaller font size */
+  }
+
+  .trade-heading {
+    font-size: 12px; /* Slightly smaller font size */
+  }
+}
+
+/* Additional responsiveness for very small screens */
+@media (max-width: 480px) {
+  .additional {
+    font-size: 18px;
+  }
+
+  .trade-summary-item {
+    width: 100%; /* Use full width for each item */
+    padding: 15px; /* Reduce padding */
+  }
+
+  .trade-number {
+    font-size: 20px; /* Further reduce font size */
+  }
+
+  .trade-heading {
+    font-size: 11px; /* Further reduce font size */
+  }
+}

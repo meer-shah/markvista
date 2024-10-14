@@ -9,6 +9,7 @@ const Tabledata = ({ data, setData }) => {
           <thead>
             <tr>
               <th>No</th>
+              <th>Date</th>
               <th>Trade Direction</th>
               <th>Risk %</th>
               <th>Outcome</th>
@@ -25,6 +26,7 @@ const Tabledata = ({ data, setData }) => {
               {data.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
+                  <td>{item.Date}</td>
                   <td>{item.TradeDirection}</td>
                   <td>{item.RiskPercentage}</td>
                   <td>{item.Outcome}</td>

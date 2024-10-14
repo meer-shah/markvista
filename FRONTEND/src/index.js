@@ -7,13 +7,24 @@ import {
 import './index.css';
 import App from './App';
 import { Description, Inputpart1, Inputpart2, Riskprofile, Main } from './modules/riskmanagement/pages';
-
+import Trade from './modules/tradingpannel/pages/trade/trade';
+import Portfoliooverview from './modules/user portfolio/pages/portfolio overview/portfoliooverview';
+import Radio from './modules/user portfolio/pages/set goals/setgoals';
+import Setgoals from './modules/user portfolio/pages/set goals/setgoals';
 // Define your routes
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [
+      {
+        path: 'userportfolio',
+        element: <Portfoliooverview/>,
+      },
+      {
+        path: 'setgoals',
+        element: <Setgoals/>,
+      },
       {
         path: 'description/:id',
         element: <Description />,
@@ -29,6 +40,11 @@ const router = createBrowserRouter([
       {
         path: 'riskprofile',
         element: <Riskprofile />,
+      },
+      
+      {
+        path: 'tradingpanel',
+        element: <Trade/>,
       },
       {
         path: 'main',

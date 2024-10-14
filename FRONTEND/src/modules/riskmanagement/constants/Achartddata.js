@@ -1,108 +1,24 @@
-// // utils.js
+const generateUniqueDates = (count, startDate = new Date()) => {
+  const dates = [];
+  const dateCounter = {}; // To track occurrences of each date
 
-// function generateData(
-//   count,
-//   winRate,
-//   riskRewardRatio,
-//   accountSize,
-//   initialRiskPerTrade,
-//   increaseOnWin,
-//   decreaseOnLoss,
-//   maxRisk,
-//   minRisk,
-//   reset,
-//   growthThreshold,
-//   payoutPercentage
-// ) {
-//   const Data = [];
-//   let currentBalance = accountSize;
-//   let riskPerTrade = initialRiskPerTrade;
-//   let consecutiveWins = 0;
-//   let consecutiveLosses = 0;
-//   let initialBalance = accountSize; // Track initial account balance
+  for (let i = 0; i < count; i++) {
+    let date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
 
-//   let totalWinDollars = 0;
-//   let totalLossDollars = 0;
-//   let totalPayoutDollars = 0;
-  
-//   for (let i = 1; i <= count; i++) {
-//     let tradeDirection = Math.random() > 0.5 ? 'Buy' : 'Sell';
-//     let outcome = Math.random() < winRate ? 'Win' : 'Loss';
-//     const riskAmount = currentBalance * (riskPerTrade / 100);
-//     let pnl;
+    // Ensure no more than 2 trades have the same date
+    while (dateCounter[date.toDateString()] >= 2) {
+      date = new Date(date);
+      date.setDate(date.getDate() + 1); // Move to the next day
+    }
 
-//     if (outcome === 'Win') {
-//       pnl = riskAmount * riskRewardRatio;
-//       totalWinDollars += pnl;
-//     } else {
-//       pnl = -riskAmount;
-//       totalLossDollars += -pnl;
-//     }
+    dateCounter[date.toDateString()] = (dateCounter[date.toDateString()] || 0) + 1;
+    dates.push(date.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+  }
 
-//     currentBalance += pnl;
-//     let payout = 0;
+  return dates;
+};
 
-//     // Check for payout based on growth threshold
-//     if (currentBalance >= initialBalance * (1 + growthThreshold / 100)) {
-//       const profit = currentBalance - initialBalance;
-//       payout = profit * (payoutPercentage / 100);
-//       currentBalance -= payout;
-//       initialBalance = currentBalance; // Update initial balance to current balance after payout
-//       totalPayoutDollars += payout;
-//     }
-
-//     Data.push({
-//       No: i,
-//       TradeDirection: tradeDirection,
-//       Outcome: outcome,
-//       RiskPercentage: riskPerTrade.toFixed(2),
-//       PNL: pnl.toFixed(2),
-//       NewBalance: currentBalance.toFixed(2),
-//       Payout: payout.toFixed(2)
-//     });
-
-//     // Update risk percentage after calculating pnl
-//     if (outcome === 'Win') {
-//       consecutiveWins++;
-//       consecutiveLosses = 0;
-
-//       if (consecutiveWins >= reset && riskPerTrade >= maxRisk) {
-//         riskPerTrade = initialRiskPerTrade;
-//         consecutiveWins = 0;
-//       } else {
-//         riskPerTrade *= 1 + increaseOnWin / 100;
-//       }
-//     } else {
-//       consecutiveLosses++;
-//       consecutiveWins = 0;
-
-//       if (consecutiveLosses >= reset && riskPerTrade > initialRiskPerTrade) {
-//         riskPerTrade = initialRiskPerTrade;
-//         consecutiveLosses = 0;
-//       } else {
-//         riskPerTrade *= 1 - decreaseOnLoss / 100;
-//       }
-//     }
-
-//     // Ensure risk does not drop below minRisk
-//     if (riskPerTrade < minRisk) {
-//       riskPerTrade = minRisk;
-//     }
-
-//     // Ensure risk does not exceed maxRisk
-//     if (riskPerTrade > maxRisk) {
-//       riskPerTrade = maxRisk;
-//     }
-//   }
-
-//   console.log("Total Winning Dollars: $", totalWinDollars.toFixed(2));
-//   console.log("Total Loss Dollars: $", totalLossDollars.toFixed(2));
-//   console.log("Total Payout Dollars: $", totalPayoutDollars.toFixed(2));
-
-//   return Data;
-// }
-
-// export default generateData;
 function generateData(
   count,
   winRate,
@@ -169,6 +85,7 @@ function generateData(
       initialBalance = currentBalance; // Update initial balance to current balance after payout
       totalPayoutDollars += payout;
     }
+    const dates = generateUniqueDates(count);
 
     Data.push({
       No: i + 1,
@@ -177,7 +94,8 @@ function generateData(
       RiskPercentage: riskPerTrade.toFixed(2),
       PNL: pnl.toFixed(2),
       NewBalance: currentBalance.toFixed(2),
-      Payout: payout.toFixed(2)
+      Payout: payout.toFixed(2),
+      Date: dates[i]
     });
 
     // Update risk percentage after calculating pnl

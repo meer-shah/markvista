@@ -1,0 +1,74 @@
+.goals-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
+}
+
+/* When the screen is smaller, adjust the flex-direction to column for better stacking */
+@media (max-width: 768px) {
+  .goals-container {
+    flex-direction: column; /* Stack elements vertically on small screens */
+    gap: 10px; /* Reduce gap for smaller screens */
+    padding: 10px;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.goal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-around;
+  padding: 8px;
+}
+
+/* Adjusting the .goal-actions for smaller screens */
+@media (max-width: 768px) {
+  .goal-actions {
+    flex-direction: column; /* Stack action buttons vertically */
+    gap: 10px; /* Reduce gap between buttons */
+    align-items: center; /* Center-align action buttons on smaller screens */
+    padding: 10px;
+  }
+}
+
+.no-goals-message {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Responsive adjustments for the .no-goals-message */
+@media (max-width: 768px) {
+  .no-goals-message {
+    margin-top: 15px; /* Reduce top margin for small screens */
+  }
+
+  .no-goals-message p {
+    font-size: 16px; /* Adjust font size for readability on smaller screens */
+    margin-bottom: 8px;
+  }
+}
+
+/* For screens smaller than 480px (Mobile devices) */
+@media (max-width: 480px) {
+  .goals-container {
+    padding: 8px;
+  }
+
+  .goal-actions {
+    flex-direction: column;
+    gap: 10px; /* Further reduce gap between buttons */
+    padding: 5px;
+  }
+
+  .no-goals-message p {
+    font-size: 14px; /* Further reduce font size for mobile screens */
+  }
+}

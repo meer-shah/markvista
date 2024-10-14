@@ -199,3 +199,71 @@
     -webkit-box-shadow: var(--circle-checked-shadow);
     box-shadow: var(--circle-checked-shadow);
   }
+
+
+
+  @media (max-width: 1300px) and (min-width: 1025px) {
+    .app_rp-inner {
+      padding: 1%;
+    }
+  
+    .inner-item {
+      height: 80%; /* Larger height for tablet screens */
+       /* Matching the height */
+    }
+  
+    .inner-item img {
+      width: 40%; /* Scale down the icon size */
+    }
+  
+   
+  }
+
+  @media (max-width: 1025px) and (min-width: 655px) {
+    
+  
+    .inner-item {
+      height: 60%; /* Larger height for tablet screens */
+       /* Matching the height */
+    }
+  
+    
+  
+   
+  }
+
+  
+  /* Mobile (480px and below) */
+  @media (max-width: 655px) {
+    .app_rp {
+      flex-direction: column; /* Stack items vertically for small screens */
+      align-items: center;
+    }
+  
+    .name, .button {
+      flex: 1; /* Full width for each section */
+      margin: 0;
+      padding: 5px;
+      text-align: center;
+    }
+  
+    .app_rp-inner {
+      padding: 1%;
+      margin-top: 10px; /* Add some margin between stacked items */
+    }
+  
+    .inner-item {
+      height: 6vw; /* Larger height for mobile screens */
+      width: 6vw;  /* Matching the height */
+    }
+  
+    .inner-item img {
+      width: 45%; /* Further scale down the icon size */
+    }
+  
+    .switch {
+      --switch-width: 9vw;  /* Adjust switch size for mobile screens */
+      --switch-height: 4vw;
+      --circle-diameter: 3vw;
+    }
+  }

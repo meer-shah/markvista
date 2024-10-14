@@ -13,7 +13,7 @@
 
 .breakdown__main-div {
   width: 100%;
-  overflow: auto;
+  /* overflow: auto; */
   max-width: 1200px; /* Adjust max-width to allow more space horizontally */
   display: flex;
   flex-direction: row;

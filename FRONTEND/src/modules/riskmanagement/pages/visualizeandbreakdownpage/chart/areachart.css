@@ -11,14 +11,15 @@
 
  /* areachart.css */
 
-.Asmall__heading {
+.small__heading {
     font-size: 24px;
     color: #fff;
     text-align: left; /* Aligns text to the right */
-    white-space: nowrap; /* Prevents wrapping */
+    white-space: wrap; /* Prevents wrapping */
     margin-bottom: 5%; /* Adds margin to the right */
     margin-left: 8%;
-    
+    display: flex;
+    flex-wrap: wrap;
     
   }
   
@@ -32,4 +33,4 @@
     padding-right: 10%;
     overflow: visible;
   }
-  
+ 

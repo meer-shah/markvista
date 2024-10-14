@@ -1,0 +1,55 @@
+/* Base styles for the trade container */
+.trade__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: var(--color-background);
+  }
+  
+  /* TradeComponent styles */
+  .trade__component {
+    width: 100%;
+    margin-bottom: 20px;
+ 
+  }
+  
+  /* Container for TradingViewWidget and Order */
+  .trade__widget-order {
+    display: flex;
+    width: 100%;
+    /* max-width: 1200px; Limit the max width for larger screens */
+    justify-content: space-between;
+    gap: 10px;
+    justify-content: stretch;
+    padding-top: 10px;
+    padding-bottom: 15px;
+    max-height: 1600px;
+  }
+  
+  /* TradingViewWidget styles */
+  .trade__widget {
+    flex: 0 0 70%; /* 70% of the width */
+    justify-content: stretch;
+     border-radius: '80px'
+  }
+  
+  /* Order component styles */
+  .trade__order {
+    flex: 0 0 30%; /* Remaining 30% of the width */
+  }
+  
+  /* Responsive styles for smaller screens */
+  @media screen and (max-width: 768px) {
+    .trade__widget-order {
+      flex-direction: column;
+    }
+  
+    .trade__widget,
+    .trade__order {
+      flex: 1 1 auto; /* Make both components take full width */
+    }
+  }
+  

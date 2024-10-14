@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  flex-direction: column; /* Stack the main sections vertically */
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.first-main-section {
+  display: flex;
+  flex-direction: row; /* Side by side columns */
+  flex: 3; /* Take up the remaining space of the parent container */
+  padding: 1rem; /* Optional padding */
+  box-sizing: border-box;
+}
+
+.left-column {
+  flex: 8; /* 60% of the available space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Optional, for even spacing of items */
+  padding-right: 1rem; /* Optional padding */
+  box-sizing: border-box;
+}
+
+.right-column {
+  flex: 2; /* 40% of the available space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Optional, for even spacing of items */
+  padding-left: 1rem; /* Optional padding */
+  box-sizing: border-box;
+}
+
+.second-main-section {
+  flex: 1; /* Take up remaining space in the parent container */
+  padding: 1rem; /* Optional padding */
+  box-sizing: border-box;
+  margin-top: 8%;
+  justify-content: center;
+  align-content: center;
+}
+
+/* Media Query for smaller screens (max-width: 768px) */
+@media (max-width: 768px) {
+  .first-main-section {
+    flex-direction: column; /* Stack columns vertically on smaller screens */
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%; /* Make both columns take up full width */
+    padding: 0; /* Remove horizontal padding */
+  }
+
+  .left-column {
+    order: 1; /* Ensure Trades Overview comes first */
+    margin-bottom: 20px; /* Add space between sections */
+  }
+
+  .right-column {
+    order: 2; /* Place Goals Component below Trades Overview */
+    margin-bottom: 20px; /* Add space between sections */
+  }
+
+  .second-main-section {
+    margin-top: 5%; /* Adjust margin to fit smaller screens */
+  }
+}
+
+/* Media Query for mobile screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .first-main-section {
+    padding: 0.5rem; /* Reduce padding for very small screens */
+  }
+
+  .second-main-section {
+    margin-top: 3%; /* Further reduce margin for mobile */
+    padding: 0.5rem; /* Reduce padding for mobile */
+  }
+}

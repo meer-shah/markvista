@@ -1,0 +1,35 @@
+/* areachart.css */
+
+.app__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--color-background);
+  flex-direction: column;
+}
+
+/* areachart.css */
+
+.small__heading {
+  font-size: 24px;
+  color: #fff;
+  text-align: left; /* Aligns text to the right */
+  white-space: wrap; /* Prevents wrapping */
+  margin-bottom: 5%; /* Adds margin to the right */
+  margin-left: 8%;
+  display: flex;
+  flex-wrap: wrap;
+  
+}
+
+
+
+.chart-container {
+  width: 100%;
+  max-width: 1200px;
+  height: 400px;
+  padding-left:  10%;
+  padding-right: 10%;
+  overflow: visible;
+}

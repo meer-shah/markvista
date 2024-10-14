@@ -1,0 +1,48 @@
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    width: 190px;
+    height: 210px;
+    margin: 0 auto;
+    text-align: center;
+    background-color: var(--color-section);
+    font-family: var(--basic-font-family);
+  }
+  
+  .heading {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: white;
+  }
+  
+  .total-profit-label {
+    font-size: 0.825rem;
+    color: var(--color-detailing);
+    margin: 0;
+  }
+  
+  .total-profit {
+    font-size: 1rem;
+    margin: 8px 0;
+  }
+  
+  .progress-label {
+    font-size: 0.825rem;
+    color: var(--color-detailing);
+    margin: 8px 0;
+  }
+  
+  .progress-bar {
+    position: relative;
+    height: 12px;
+    background-color: #555;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .progress-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+  

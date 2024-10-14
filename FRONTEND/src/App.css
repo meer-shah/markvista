@@ -52,6 +52,7 @@
   margin: 2%;
   margin-left: 0;
   margin: 1rem 1 rem;
+  text-wrap:wrap;
 }
 .p__heading {
   font-family: var(--heading-font-family);

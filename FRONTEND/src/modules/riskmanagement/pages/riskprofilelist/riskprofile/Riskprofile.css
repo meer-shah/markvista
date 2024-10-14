@@ -1,106 +1,166 @@
 .radio-inputs {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    border-radius: 0.5rem;
-    background-color:var(--color-section);
-    box-sizing: border-box;
-    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
-    padding: 0.25rem;
-    width: 300px;
-    font-size: 14px;
-    margin: 1% 4%;
-  }
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  background-color: var(--color-section);
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 0.25rem;
+  width: 100%; /* Make the radio group responsive */
+  max-width: 300px; /* Ensure a maximum width for larger screens */
+  font-size: 14px;
+  margin: 1% 4%;
+}
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: 0.5rem 0;
+  color: var(--color-detailing);
+  transition: all 0.15s ease-in-out;
+}
+
+.radio-inputs .radio input:checked + .name {
+  background-color: var(--color-text);
+  font-weight: 600;
+}
+
+.container {
+  margin: 1% 4%;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.custom-button {
+  position: relative;
+  width: 70%;
+  height: 20%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
-  .radio-inputs .radio {
-    flex: 1 1 auto;
-    text-align: center;
-  }
-  
-  .radio-inputs .radio input {
-    display: none;
-  }
-  
-  .radio-inputs .radio .name {
-    display: flex;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    border: none;
-    padding: .5rem 0;
-    color:var(--color-detailing);
-    transition: all .15s ease-in-out;
-  }
-  
-  .radio-inputs .radio input:checked + .name {
-    background-color:var(--color-text);
-    font-weight: 600;
+  border: 1px solid var(--color-heading);
+  background-color: var(--color-heading);
+  transition: all 0.3s;
+  border-radius: 5px;
+}
+
+.custom-button, .custom-button__icon, .custom-button__text {
+  transition: all 0.3s;
+}
+
+.custom-button .custom-button__text {
+  transform: translateX(30px);
+  color: var(--color-white);
+  font-weight: 600;
+  align-self: center;
+  margin-left: -60%;
+}
+
+.custom-button .custom-button__icon {
+  position: absolute;
+  transform: translateX(109px);
+  height: 100%;
+  width: 39px;
+  background-color: var(--color-heading);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-button .custom-svg {
+  width: 30px;
+  stroke: var(--color-white);
+}
+
+.custom-button:hover {
+  background: var(--color-white);
+}
+
+.custom-button:hover .custom-button__text {
+  color: transparent;
+}
+
+.custom-button:hover .custom-button__icon {
+  width: 148px;
+  transform: translateX(0);
+}
+
+.custom-button:active .custom-button__icon {
+  background-color: var(--color-white);
+}
+
+.custom-button:active {
+  border: 1px solid #fff;
+}
+
+/* Responsive Design */
+
+/* Tablet Screens (481px to 768px) */
+@media (max-width: 768px) {
+  .radio-inputs {
+    width: 90%; /* Expand to almost full width on tablets */
   }
 
-  .container{
-    margin: 1% 4%;
-    display: flex;
-    flex-direction: row-reverse;
+  .container {
+    margin: 2% 4%;
+    flex-direction: column; /* Stack items vertically for better readability on smaller screens */
+    align-items: center;
   }
+
   .custom-button {
-    position: relative;
-    width: 150px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--color-heading);
-    background-color:var(--color-heading);
-    transition: all 0.3s;
-    border-radius: 5px;
-    
+    width: 100%; /* Full width on tablet screens */
+    max-width: 300px; /* Still restrict maximum width */
+    height: 45px; /* Adjust height slightly */
   }
-  
-  .custom-button, .custom-button__icon, .custom-button__text {
-    transition: all 0.3s;
-  }
-  
+
   .custom-button .custom-button__text {
-    transform: translateX(30px);
-    color:var(--color-white);
-    font-weight: 600;
+    transform: translateX(20px); /* Adjust text positioning */
   }
-  
+
   .custom-button .custom-button__icon {
-    position: absolute;
-    transform: translateX(109px);
-    height: 100%;
-    width: 39px;
-    background-color:var(--color-heading);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transform: translateX(80px); /* Adjust icon positioning */
   }
-  
-  .custom-button .custom-svg {
-    width: 30px;
-    stroke: var(--color-white);
+}
+
+/* Mobile Screens (480px and below) */
+@media (max-width: 480px) {
+  .radio-inputs {
+    width: 100%; /* Full width for mobile devices */
   }
-  
-  .custom-button:hover {
-    background:var(--color-white);
+
+  .container {
+    margin: 2% 4%;
+    flex-direction: column;
+    align-items: center; /* Center the buttons */
   }
-  
-  .custom-button:hover .custom-button__text {
-    color: transparent;
+
+  .custom-button {
+    width: 100%; /* Full width on mobile */
+    max-width: 250px; /* Reduce max-width slightly */
+    height: 40px; /* Adjust button height */
   }
-  
-  .custom-button:hover .custom-button__icon {
-    width: 148px;
-    transform: translateX(0);
+
+  .custom-button .custom-button__text {
+    transform: translateX(15px); /* Adjust text position */
   }
-  
-  .custom-button:active .custom-button__icon {
-    background-color: var(--color-white);
+
+  .custom-button .custom-button__icon {
+    transform: translateX(70px); /* Adjust icon position */
   }
-  
-  .custom-button:active {
-    border: 1px solid #fff;
-  }
-  
+}

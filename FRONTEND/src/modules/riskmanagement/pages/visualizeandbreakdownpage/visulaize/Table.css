@@ -1,20 +1,19 @@
-/* Table.css */
-
+/* General Table Layout */
 .table-data-wrapper {
   padding: 20px;
   background-color: var(--color-background);
   border-radius: 8px;
   height: 100vh; /* Full height */
-  display: flex; /* Use flexbox for layout */
+  display: flex; /* Flexbox layout */
   flex-direction: column; /* Column layout */
 }
 
 .table-data-form {
-  overflow-x: auto; /* Enable horizontal scrolling for small screens */
-  flex-grow: 1; /* Allow the form to grow and take available space */
-  display: flex; /* Use flexbox for layout */
-  flex-direction: column; /* Column layout */
-  justify-content: flex-start; /* Align items to the top */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  flex-grow: 1; /* Allow form to take available space */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .table-head {
@@ -26,8 +25,7 @@
 }
 
 .table-body-wrapper {
- 
-  max-height: 600px; /* Set your desired height */
+  max-height: 600px; /* Set desired height */
   overflow-y: auto; /* Vertical scrollbar */
 }
 
@@ -38,7 +36,7 @@
   text-align: left;
   font-family: var(--basic-font-family);
   font-size: 14px; /* Smaller font size for rows */
-  width: 150px; /* Set a fixed width for uniformity */
+  width: 150px; /* Fixed width for uniformity */
 }
 
 .table-head th {
@@ -46,7 +44,7 @@
   background-color: var(--color-detailing);
   color: var(--color-text);
   font-weight: bold;
-  font-size: 16px; /* Slightly larger font size for header */
+  font-size: 16px; /* Larger font size for header */
 }
 
 .table-body tr:nth-child(even) {
@@ -62,8 +60,6 @@
 .table-body tr:hover {
   background-color: #555; /* Highlight row on hover */
 }
-
-
 
 /* Scrollbar styling for WebKit browsers (Chrome, Safari) */
 .table-body-wrapper::-webkit-scrollbar {
@@ -87,4 +83,60 @@
 .table-body-wrapper {
   scrollbar-width: thin; /* Set the scrollbar width */
   scrollbar-color: var(--color-detailing) var(--color-background); /* Thumb and track colors */
+}
+
+/* Responsive Design */
+
+/* Tablet Screens (481px to 768px) */
+@media (max-width: 768px) {
+  .table-data-wrapper {
+    padding: 10px; /* Reduce padding on smaller screens */
+  }
+
+  .table-body-wrapper {
+    max-height: 400px; /* Adjust max height for smaller screens */
+  }
+
+  .table-head th, .table-body td {
+    font-size: 12px; /* Slightly smaller font on tablets */
+    padding: 10px 12px; /* Adjust padding */
+  }
+
+  .table-head th {
+    font-size: 14px; /* Adjust header font size */
+  }
+}
+
+/* Mobile Screens (480px and below) */
+@media (max-width: 480px) {
+  .table-data-wrapper {
+    padding: 5px; /* Further reduce padding on mobile */
+  }
+
+  .table-body-wrapper {
+    max-height: 300px; /* Adjust max height for mobile */
+  }
+
+  .table-head th, .table-body td {
+    font-size: 10px; /* Smaller font for mobile */
+    padding: 8px 10px; /* Adjust padding */
+  }
+
+  .table-head th {
+    font-size: 12px; /* Smaller header font size */
+  }
+
+  .table-data-form {
+    overflow-x: auto; /* Enable horizontal scrolling for small screens */
+  }
+
+  .table-head, .table-body td {
+    width: auto; /* Allow columns to auto-size on mobile */
+  }
+
+  /* Ensure table is scrollable horizontally on small screens */
+  .table-body-wrapper {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent table content from wrapping */
+  }
 }
