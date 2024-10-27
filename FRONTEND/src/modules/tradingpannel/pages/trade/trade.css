@@ -52,4 +52,16 @@
       flex: 1 1 auto; /* Make both components take full width */
     }
   }
-  
+.connectaccount{
+  font-family: var(--basic-font-family);
+    color: var(--color-text);
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+    margin-top: 1.5%;
+    margin-bottom: 1.5%;
+    padding: 20px;
+    background-color: var(--color-section);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

@@ -3,6 +3,7 @@ require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const riskProfileRoutes = require('./routes/riskprofiles'); // Adjust path as necessary
+const orderRoutes = require('./routes/order'); // Adjust path as necessary
 
 // Express app
 const app = express();
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/riskprofiles', riskProfileRoutes);
+app.use('/api/order',orderRoutes );
 
 // Connect to MongoDB
 const mongoURI = process.env.MONGO_URI; // Ensure the database name is correct

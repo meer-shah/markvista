@@ -4,13 +4,16 @@ const {
   getSingleRiskProfile,
   createRiskProfile,
   deleteRiskProfile,
-  updateRiskProfile
+  updateRiskProfile,
+  activateprofile,
+  getActiveRiskProfile
 } = require('../controllers/riskprofilecontroller');
 
 const router = express.Router();
-
+router.get('/getactive', getActiveRiskProfile);
 // Get all risk profiles 
 router.get('/', getAllRiskProfiles);
+
 
 // Get a single risk profile
 router.get('/:id', getSingleRiskProfile);
@@ -23,5 +26,7 @@ router.delete('/:id', deleteRiskProfile);
 
 // Update a risk profile
 router.patch('/:id', updateRiskProfile);
+router.put('/:id/activate', activateprofile); // Activate/deactivate risk profile
+
 
 module.exports = router;

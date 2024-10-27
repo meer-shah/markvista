@@ -52,6 +52,10 @@ SLallowedperday:{
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  ison:{
+    type: Boolean,
+    default: false,
   }
 
 });

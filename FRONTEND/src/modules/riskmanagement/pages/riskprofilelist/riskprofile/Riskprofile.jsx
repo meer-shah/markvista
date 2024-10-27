@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import{ RiskprofileTemplate }  from '../../../containers'; // Adjust the import path if needed
 import './Riskprofile.css';
 
+
 const Riskprofile = () => {
   const navigate = useNavigate();
   const [riskProfiles, setRiskProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
     const fetchRiskProfiles = async () => {
       try {
@@ -37,6 +38,35 @@ const Riskprofile = () => {
   const handleDelete = (id) => {
     setRiskProfiles((prevProfiles) => prevProfiles.filter(profile => profile._id !== id));
   };
+
+  const [activeProfileId, setActiveProfileId] = useState(null);
+
+  const handleToggle = async (id) => {
+    const newActiveId = activeProfileId === id ? null : id;
+  
+    try {
+      const payload = { ison: newActiveId !== null }; // Set 'ison' to true or false based on toggle
+  
+      // Make the PUT request to activate/deactivate the risk profile
+      const response = await fetch(`http://localhost:4000/api/riskprofiles/${id}/activate`, {
+        method: 'PUT', // Change to PUT for the activate endpoint
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to activate/deactivate risk profile');
+      }
+  
+      setActiveProfileId(newActiveId);
+    } catch (error) {
+      console.error('Error toggling risk profile:', error);
+    }
+  };
+  
+  
 
   if (loading) {
     return <div>Loading...</div>;
@@ -72,6 +102,8 @@ const Riskprofile = () => {
             id={riskProfile._id}
             title={riskProfile.title}
             onDelete={handleDelete}
+            isChecked={activeProfileId === riskProfile._id} // Pass checked state
+          onToggle={() => handleToggle(riskProfile._id)}  // Pass toggle handler
           />
         ))}
       </div>

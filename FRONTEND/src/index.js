@@ -11,6 +11,7 @@ import Trade from './modules/tradingpannel/pages/trade/trade';
 import Portfoliooverview from './modules/user portfolio/pages/portfolio overview/portfoliooverview';
 import Radio from './modules/user portfolio/pages/set goals/setgoals';
 import Setgoals from './modules/user portfolio/pages/set goals/setgoals';
+import APICONNECTION from './modules/tradingpannel/pages/connectapi/apiconnection';
 // Define your routes
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: 'userportfolio',
         element: <Portfoliooverview/>,
+      },
+      {
+        path: 'apiconnection',
+        element: <APICONNECTION/>,
       },
       {
         path: 'setgoals',
