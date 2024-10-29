@@ -53,7 +53,8 @@ const Breakdown = ({ id, setData, setIsStrategyRun }) => {
       riskProfile.minRisk,
       riskProfile.reset,
       riskProfile.growthThreshold,
-      riskProfile.payoutPercentage
+      riskProfile.payoutPercentage,
+      riskProfile.SLallowedperday
     );
 
     const wins = data.filter(trade => trade.Outcome === 'Win').length;

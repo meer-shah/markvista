@@ -1,4 +1,4 @@
-const generateUniqueDates = (count, startDate = new Date()) => {
+const generateUniqueDates = (count, SLallowedperday , startDate = new Date()) => {
   const dates = [];
   const dateCounter = {}; // To track occurrences of each date
 
@@ -6,8 +6,8 @@ const generateUniqueDates = (count, startDate = new Date()) => {
     let date = new Date(startDate);
     date.setDate(startDate.getDate() + i);
 
-    // Ensure no more than 2 trades have the same date
-    while (dateCounter[date.toDateString()] >= 2) {
+    // Ensure no more than trades have the same date
+    while (dateCounter[date.toDateString()] >= SLallowedperday) {
       date = new Date(date);
       date.setDate(date.getDate() + 1); // Move to the next day
     }
@@ -31,7 +31,9 @@ function generateData(
   minRisk,
   reset,
   growthThreshold,
-  payoutPercentage
+  payoutPercentage,
+  SLallowedperday
+
 ) {
   const Data = [];
   let currentBalance = accountSize;
@@ -44,6 +46,20 @@ function generateData(
   let totalLossDollars = 0;
   let totalPayoutDollars = 0;
 
+  
+ console.log( count,
+  winRate,
+  riskRewardRatio,
+  accountSize,
+  initialRiskPerTrade,
+  increaseOnWin,
+  decreaseOnLoss,
+  maxRisk,
+  minRisk,
+  reset,
+  growthThreshold,
+  payoutPercentage,
+  SLallowedperday)
   // Convert winRate from decimal to percentage
   const winRateDecimal = winRate;
 
@@ -85,7 +101,7 @@ function generateData(
       initialBalance = currentBalance; // Update initial balance to current balance after payout
       totalPayoutDollars += payout;
     }
-    const dates = generateUniqueDates(count);
+    const dates = generateUniqueDates(count , SLallowedperday);
 
     Data.push({
       No: i + 1,

@@ -147,6 +147,7 @@ const activateprofile = async (req, res) => {
   }
 };
 
+// Get  active risk profiles
 // Get all active risk profiles
 const getActiveRiskProfile = async (req, res) => {
   try {
@@ -157,6 +158,7 @@ const getActiveRiskProfile = async (req, res) => {
     res.status(500).json({ message: 'Error fetching risk profiles', error: error.message });
   }
 };
+
 
 module.exports = {
   getAllRiskProfiles,

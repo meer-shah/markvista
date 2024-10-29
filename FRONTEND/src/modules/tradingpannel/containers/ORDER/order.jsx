@@ -134,22 +134,42 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
         orderType,
         price: orderPrice,
         positionIdx: 0,
-        timeInForce: "GTC"
-        
+        timeInForce: "GTC",
+        takeProfit,
+        stopLoss,
 
       }
       console.log(data)
-      const response = await axios.post("http://localhost:4000/api/order/place-order",data)
+      const response = await axios.post("http://localhost:4000/api/order/place-orderwithconditions",data)
       console.log(response.data)
       alert('Open Long Position');
     }
   };
 
-  const handleOpenShort = () => {
+  const handleOpenShort = async() => {
     if (parseFloat(stopLoss) <= parseFloat(orderPrice) || parseFloat(takeProfit) >= parseFloat(orderPrice)) {
       alert('For Open Short: Stop Loss must be higher and Take Profit must be lower than Order Price');
     } else {
       // Handle the Open Short logic
+      const data ={
+        symbol,
+        side:"Sell",
+        category:"linear",
+        qty:orderQuantity.toString(),
+        orderType,
+        price: orderPrice,
+        positionIdx: 0,
+        timeInForce: "GTC",
+        takeProfit,
+        stopLoss,
+        
+
+      }
+      console.log(data)
+      const response = await axios.post("http://localhost:4000/api/order/place-orderwithconditions",data)
+      console.log(response.data)
+    
+    
       alert('Open Short Position');
     }
   };
