@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import './breakdown.css';
 import { generateData } from '../../../constants/index';
@@ -18,6 +17,7 @@ const Breakdown = ({ id, setData, setIsStrategyRun }) => {
     usdLost: 0,
     netProfitLoss: 0,
   });
+  const [error, setError] = useState(''); // State for error messages
 
   useEffect(() => {
     const fetchRiskProfile = async () => {
@@ -40,6 +40,14 @@ const Breakdown = ({ id, setData, setIsStrategyRun }) => {
     const parsedRiskRewardRatio = parseFloat(riskRewardRatio) || 0;
     const parsedAccountSize = parseFloat(accountSize) || 0;
     const parsedNumTrades = parseFloat(numTrades) || 0;
+
+    // Check if the riskRewardRatio is less than the minimum defined in the risk profile
+    if (parsedRiskRewardRatio < riskProfile.minRiskRewardRatio) {
+      alert(`Risk to Reward Ratio cannot be less than ${riskProfile.minRiskRewardRatio}`);
+      return; // Exit the function if the condition is met
+    }
+
+    // setError(''); // Clear error if validation passes
 
     const data = generateData(
       parsedNumTrades,
@@ -132,6 +140,7 @@ const Breakdown = ({ id, setData, setIsStrategyRun }) => {
             />
           </div>
           <button className="form-button" onClick={handleRunStrategy}>Run Strategy</button>
+          {error && <p className="error-message">{error}</p>} {/* Display error message */}
         </div>
 
         {/* Second Main Div */}

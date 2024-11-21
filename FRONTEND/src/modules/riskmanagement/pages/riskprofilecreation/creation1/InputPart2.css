@@ -151,6 +151,9 @@
     display: flex;
     justify-content: space-between; /* Adjusted to space between */
     gap: 20px;
+    align-items: center;
+    justify-content: center;
+
   }
   
 

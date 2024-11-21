@@ -140,7 +140,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
 
       }
       console.log(data)
-      const response = await axios.post("http://localhost:4000/api/order/place-orderwithconditions",data)
+      const response = await axios.post("http://localhost:4000/api/order/place-order",data)
       console.log(response.data)
       alert('Open Long Position');
     }
@@ -166,7 +166,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
 
       }
       console.log(data)
-      const response = await axios.post("http://localhost:4000/api/order/place-orderwithconditions",data)
+      const response = await axios.post("http://localhost:4000/api/order/place-order",data)
       console.log(response.data)
     
     

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './description.css'; // Ensure you have a CSS file for styling
-import { stringify } from 'flatted'
 
 const Description = () => {
   const { id } = useParams(); // Get the risk profile ID from the URL
@@ -44,21 +43,23 @@ const Description = () => {
   return (
     <div className={'app__wrapper main'}>
       <p className='small__heading'>{riskProfile.title}</p>
-      <p className={'app__wrapper_info p__basic'}>{riskProfile.description || 'No description available'}
-      <ul className={'risk-profile-details  p__basic'}>
+      <p className={'app__wrapper_info p__basic'}>
+        {riskProfile.description || 'No description available'}
+      </p>
+      <ul className={'risk-profile-details p__basic'}>
         <li><strong>Initial Risk Per Trade:</strong> {riskProfile.initialRiskPerTrade}</li>
         <li><strong>SL Allowed Per Day:</strong> {riskProfile.SLallowedperday}</li>
         <li><strong>Increase on Win:</strong> {riskProfile.increaseOnWin}</li>
         <li><strong>Decrease on Loss:</strong> {riskProfile.decreaseOnLoss}</li>
         <li><strong>Max Risk:</strong> {riskProfile.maxRisk}</li>
         <li><strong>Min Risk:</strong> {riskProfile.minRisk}</li>
+        <li><strong>Min Risk to Reward Ratio:</strong> {riskProfile.minRiskRewardRatio}</li> {/* Updated line */}
         <li><strong>Reset:</strong> {riskProfile.reset}</li>
         <li><strong>Growth Threshold:</strong> {riskProfile.growthThreshold}</li>
         <li><strong>Payout Percentage:</strong> {riskProfile.payoutPercentage}</li>
         <li><strong>Number of Active Trades:</strong> {riskProfile.noofactivetrades}</li>
         <li><strong>Created At:</strong> {new Date(riskProfile.createdAt).toLocaleDateString()}</li>
       </ul>
-      </p>
     </div>
   );
 };

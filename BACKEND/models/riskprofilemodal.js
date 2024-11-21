@@ -10,56 +10,49 @@ const riskProfileSchema = new Schema({
   description: {
     type: String,
   },
-
-SLallowedperday:{
+  SLallowedperday: {
     type: Number
-},
+  },
   initialRiskPerTrade: {
     type: Number,
     required: true
   },
   increaseOnWin: {
     type: Number,
-    
   },
   decreaseOnLoss: {
     type: Number,
-    
   },
   maxRisk: {
     type: Number,
-    
   },
   minRisk: {
     type: Number,
-    
   },
   reset: {
     type: Number,
-    
   },
   growthThreshold: {
     type: Number,
-   
   },
   payoutPercentage: {
     type: Number,
-    
   },
   noofactivetrades: {
     type: Number,
+  },
+  minRiskRewardRatio: { // New field added here
+    type: Number,
+    // or false, depending on your requirements
   },
   createdAt: {
     type: Date,
     default: Date.now
   },
-  ison:{
+  ison: {
     type: Boolean,
     default: false,
   }
-
 });
 
 module.exports = mongoose.model('RiskProfile', riskProfileSchema);
-
-
