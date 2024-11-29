@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
 
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const riskProfileSchema = new Schema({
@@ -54,5 +54,25 @@ const riskProfileSchema = new Schema({
     default: false,
   }
 });
+
+
+const AdjustedRiskSchema = new mongoose.Schema({
+    riskProfileId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'RiskProfile',
+        required: true,
+    },
+    adjustedRisk: {
+        type: Number,
+        required: true,
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+const AdjustedRisk = mongoose.model('AdjustedRisk', AdjustedRiskSchema);
+module.exports = AdjustedRisk;
 
 module.exports = mongoose.model('RiskProfile', riskProfileSchema);
