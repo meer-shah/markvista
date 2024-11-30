@@ -56,23 +56,21 @@ const riskProfileSchema = new Schema({
 });
 
 
-const AdjustedRiskSchema = new mongoose.Schema({
-    riskProfileId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'RiskProfile',
-        required: true,
-    },
-    adjustedRisk: {
-        type: Number,
-        required: true,
-    },
-    timestamp: {
-        type: Date,
-        default: Date.now,
-    },
-});
 
-const AdjustedRisk = mongoose.model('AdjustedRisk', AdjustedRiskSchema);
-module.exports = AdjustedRisk;
+const dailyLossSchema = new mongoose.Schema(
+  {
+    date: { type: String, required: true }, // Store date as a string in 'YYYY-MM-DD' format
+    totalLoss: { type: Number, default: 0 }, // Store the total losses for the day
+  },
+  { timestamps: true }
+);
+
+// Create the model
+const DailyLoss = mongoose.model("DailyLoss", dailyLossSchema);
+
+module.exports = DailyLoss;
+
+
+
 
 module.exports = mongoose.model('RiskProfile', riskProfileSchema);

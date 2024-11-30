@@ -2,6 +2,7 @@
                 const axios = require("axios");
                 const RiskProfile = require('../models/riskprofilemodal');
                 const AdjustedRisk = require('../models/riskprofilemodal'); // Import the AdjustedRisk model
+                const DailyLoss = require('../models/riskprofilemodal'); ; // Adjust path according to where you defined the model
 
                 //real account
                 // const url = 'https://api.bybit.com';  // API base URL
@@ -117,8 +118,7 @@
     // Track the consecutive wins and losses
     let consecutiveWins = 0;
     let consecutiveLosses = 0;
-
-    const placeOrderWithRiskProfile = async (data) => {
+        const placeOrderWithRiskProfile = async (data) => {
         try {
             // Fetch the active risk profile
             const riskProfile = await RiskProfile.findOne({ ison: true });
@@ -210,8 +210,20 @@
             } else {
                 console.warn("No closed trades available or it's the first trade. Using initial risk.");
             }
+            const minRisk = riskProfile.minRisk || 0;
+            const maxRisk = riskProfile.maxRisk || 100;
     
+            // Ensure adjusted risk respects min and max bounds
+            if (adjustedRisk < minRisk) {
+                console.warn(`Adjusted risk (${adjustedRisk}%) is below min risk (${minRisk}%). Using min risk.`);
+                adjustedRisk = minRisk;
+            }
+            if (adjustedRisk > maxRisk) {
+                console.warn(`Adjusted risk (${adjustedRisk}%) exceeds max risk (${maxRisk}%). Using max risk.`);
+                adjustedRisk = maxRisk;
+            }
             console.log(`Final adjusted risk: ${adjustedRisk}%`);
+
             let symbol = data.symbol
      // Fetch tickers to get precision
     const tickerResponse = await axios.get(
@@ -263,6 +275,9 @@
             throwError(`Error in placeOrderWithRiskProfile: ${error.message}`);
         }
     };
+
+   
+        
             // Decide which order function to use
             const placeOrder = async (req, res) => {
                 try {
@@ -322,11 +337,7 @@
                 return 0;
                 };
 
-                /**
-                 * Retrieve the list of unfilled orders
-                 * @param {string} data - The query string for the request.
-                 * @returns {Promise<object>} - The response data from the API.
-                 */
+                
                 const getOrderList = async (data) => {
                     const endpoint = "/v5/order/realtime";  // API endpoint for fetching orders
                     return await http_request(endpoint, "GET", data, "Get Order List");  // Call the API
@@ -492,31 +503,17 @@
 
 
 
-                /**
-                 * Retrieve the wallet balance for the account
-                 * @param {string} data - The query string for the request.
-                 * @returns {Promise<object>} - The response data from the API.
-                 */
                 const getAccountBalance = async (data) => {
                     const endpoint = "/v5/account/wallet-balance";  // API endpoint for getting account balance
                     return await http_request(endpoint, "GET", data, "Get Account Balance");  // Call the API
                 };
 
-                /**
-                 * Retrieve the coin balance for the account
-                 * @param {string} data - The query string for the request.
-                 * @returns {Promise<object>} - The response data from the API.
-                 */
                 const getCoinBalance = async (data) => {
                     const endpoint = "/v5/asset/transfer/query-account-coins-balance";  // API endpoint for getting coin balances
                     return await http_request(endpoint, "GET", data, "Get Coin Balance");  // Call the API
                 };
 
-                /**
-                 * Retrieve the balance for a specific coin (e.g., BTC)
-                 * @param {string} symbol - The coin symbol (e.g., BTC, ETH).
-                 * @returns {Promise<object>} - The response data from the API.
-                 */
+               
                 const getSingleCoinBalance = async (symbol) => {
                     const data = `accountType=UNIFIED&coin=${symbol}`;  // Coin balance request data
                     const endpoint = "/v5/asset/transfer/query-account-coins-balance";  // API endpoint for getting single coin balance
