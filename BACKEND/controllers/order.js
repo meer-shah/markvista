@@ -113,7 +113,8 @@
             // Place an order with a risk profile
         // Flag to track if this is the first trade (initial trade)
     // Flag to track if this is the first trade (initial trade)
-    let isFirstTrade = true;
+    let isFirstTrade = adjustedRiskArray.length === 0;
+
 
     // Track the consecutive wins and losses
     let consecutiveWins = 0;
@@ -165,24 +166,22 @@ try {
         });
 
         console.log(`Total losses for today: ${totalLosses}`);
-
-        // Deduct total losses from SL allowed per day
-        SLallowedPerDay = SLallowedPerDay - totalLosses;
-
-        console.log(`Total remaining losses for today: ${SLallowedPerDay}`);
+        SLallowedPerDay -= totalLosses;
+        console.log(`Remaining SL allowed for today: ${SLallowedPerDay}`);
     } else {
         console.warn("No closed trades available for today.");
     }
 } catch (error) {
-    // Handle errors in API request or processing
     console.error("Error while fetching PnL data:", error.message || error);
     throw new Error("Failed to fetch PnL data. Please check the network or try again later.");
 }
 
-if (SLallowedPerDay==0) {
-    console.warn("SL ALLOWED PER DAY is already been hit come tommorow to trade.");
+// Ensure SL limit is not reached
+if (SLallowedPerDay <= 0) {
+    console.warn("SL ALLOWED PER DAY is already hit, come tomorrow to trade.");
     return;
 }
+
     // Fetch active orders and filter out conditional orders
     const orderListResponse = await getOrderList("category=linear&settleCoin=USDT");
     const activeOrders = orderListResponse?.result?.list?.filter(order => !order.stopOrderType); // Only include non-conditional orders
@@ -251,7 +250,8 @@ if (SLallowedPerDay==0) {
             const allpnlResponse = await http_request(pnlendpoint, "GET", "category=linear", "Get Closed PnL");
     
             let adjustedRisk = initialRisk;
-    
+            let lastAdjustedRisk = adjustedRiskArray[adjustedRiskArray.length - 1] || initialRisk;
+
             // Check if we need to reset the trade sequence based on consecutive wins/losses
             if (consecutiveWins >= resetValue || consecutiveLosses >= resetValue) {
                 console.log("Consecutive wins/losses threshold reached. Resetting to initial risk.");
@@ -263,12 +263,13 @@ if (SLallowedPerDay==0) {
             // If it's the first trade or we need to reset, use only the initial risk
             if (isFirstTrade) {
                 console.warn("First trade or reset occurred. Using initial risk.");
-            } else if (allpnlResponse?.result?.list?.length) {
+            } 
+            else if (allpnlResponse?.result?.list?.length) {
                 const lastTrade = allpnlResponse.result.list[0];
                 const lastTradeResult = parseFloat(lastTrade.closedPnl) > 0 ? "Win" : "Loss";
     
                 // Adjust the risk based on the previous trade result
-                adjustedRisk = calculateAdjustedRisk(adjustedRisk, riskProfile, lastTradeResult);
+                adjustedRisk = calculateAdjustedRisk(lastAdjustedRisk, riskProfile, lastTradeResult);
     
                 // Track consecutive wins or losses
                 if (lastTradeResult === "Win") {
@@ -281,18 +282,8 @@ if (SLallowedPerDay==0) {
             } else {
                 console.warn("No closed trades available or it's the first trade. Using initial risk.");
             }
-            const minRisk = riskProfile.minRisk || 0;
-            const maxRisk = riskProfile.maxRisk || 100;
     
-            // Ensure adjusted risk respects min and max bounds
-            if (adjustedRisk < minRisk) {
-                console.warn(`Adjusted risk (${adjustedRisk}%) is below min risk (${minRisk}%). Using min risk.`);
-                adjustedRisk = minRisk;
-            }
-            if (adjustedRisk > maxRisk) {
-                console.warn(`Adjusted risk (${adjustedRisk}%) exceeds max risk (${maxRisk}%). Using max risk.`);
-                adjustedRisk = maxRisk;
-            }
+        
             console.log(`Final adjusted risk: ${adjustedRisk}%`);
 
             let symbol = data.symbol
@@ -342,12 +333,15 @@ if (SLallowedPerDay==0) {
             isFirstTrade = false;
     
             await simplePlaceOrder(data);
+
+
+        console.log(adjustedRiskArray)
         } catch (error) {
             throwError(`Error in placeOrderWithRiskProfile: ${error.message}`);
         }
     };
 
-   
+
         
             // Decide which order function to use
             const placeOrder = async (req, res) => {
@@ -414,16 +408,28 @@ if (SLallowedPerDay==0) {
                     return await http_request(endpoint, "GET", data, "Get Order List");  // Call the API
                 };
 
-                /**
-                 * Cancel an existing order using Bybit API
-                 * @param {string} orderLinkId - The unique order link ID of the order to cancel.
-                 * @returns {Promise<object>} - The response data from the API.
-                 */
-                const cancelOrder = async (orderLinkId) => {
-                    const data = `{"category":"linear","symbol":"BTCUSDT","orderLinkId":"${orderLinkId}"}`;  // Data for cancellation request
-                    const endpoint = "/v5/order/cancel";  // API endpoint for cancelling orders
-                    return await http_request(endpoint, "POST", data, "Cancel Order");  // Call the API
+            
+                const cancelOrder = async (data) => {
+                    try {
+                        const endpoint = "/v5/order/cancel-all";  // API endpoint for cancelling orders
+                        const response = await http_request(endpoint, "POST", data, "Cancel all Order");  // Call the API
+                        
+                        console.log("Order cancellation successful:", response);
+                
+                        // Remove the last element from the adjustedRiskArray
+                        if (adjustedRiskArray.length > 0) {
+                            const removedElement = adjustedRiskArray.pop();
+                            console.log(`Removed last element from adjustedRiskArray: ${removedElement}`);
+                        } else {
+                            console.warn("adjustedRiskArray is empty. Nothing to remove.");
+                        }
+                
+                        return response;
+                    } catch (error) {
+                        throw new Error(`Failed to cancel orders: ${error.message}`);
+                    }
                 };
+                
 
             
             
