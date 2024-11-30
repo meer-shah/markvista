@@ -125,7 +125,84 @@
             if (!riskProfile) throwError("No active risk profile found.");
     
             console.log("Active Risk Profile:", riskProfile);
-    
+    // Retrieve SLallowedPerDay from risk profile
+    let SLallowedPerDay = riskProfile.SLallowedperday || 1000; // Default to 1000 if not provided
+    console.log(`SL Allowed Per Day: ${SLallowedPerDay}`);
+
+
+    const startOfDay = new Date(new Date().setHours(0, 0, 0, 0)).getTime(); // Midnight timestamp for today
+const endOfDay = new Date(new Date().setHours(23, 59, 59, 999)).getTime(); // End of the day timestamp
+
+console.log(startOfDay); // Logs the start of the day timestamp
+console.log(endOfDay);   // Logs the end of the day timestamp
+
+const pnlEndpoint = "/v5/position/closed-pnl";  // Endpoint for closed PnL
+
+// Prepare the PnL request data with timestamps
+const pnlData = `category=linear&startTime=${startOfDay}&endTime=${endOfDay}`;
+
+try {
+    // Fetch the closed PnL data for the day
+    const pnlResponse = await http_request(pnlEndpoint, "GET", pnlData, "Get Closed PnL");
+
+    // Check if the response is valid
+    if (pnlResponse?.result?.list?.length > 0) {
+        let totalLosses = 0;
+
+        // Loop through each trade and check if it's a loss
+        pnlResponse.result.list.forEach((trade) => {
+            const pnl = parseFloat(trade.closedPnl);  // Get the PnL for this trade
+
+            // Ensure the PnL is a valid number
+            if (isNaN(pnl)) {
+                console.warn(`Invalid PnL value for trade: ${trade}`);
+                return; // Skip invalid trade data
+            }
+
+            if (pnl < 0) {
+                totalLosses++ ;  // Add losses (negative PnL) to the total
+            }
+        });
+
+        console.log(`Total losses for today: ${totalLosses}`);
+
+        // Deduct total losses from SL allowed per day
+        SLallowedPerDay = SLallowedPerDay - totalLosses;
+
+        console.log(`Total remaining losses for today: ${SLallowedPerDay}`);
+    } else {
+        console.warn("No closed trades available for today.");
+    }
+} catch (error) {
+    // Handle errors in API request or processing
+    console.error("Error while fetching PnL data:", error.message || error);
+    throw new Error("Failed to fetch PnL data. Please check the network or try again later.");
+}
+
+if (SLallowedPerDay==0) {
+    console.warn("SL ALLOWED PER DAY is already been hit come tommorow to trade.");
+    return;
+}
+    // Fetch active orders and filter out conditional orders
+    const orderListResponse = await getOrderList("category=linear&settleCoin=USDT");
+    const activeOrders = orderListResponse?.result?.list?.filter(order => !order.stopOrderType); // Only include non-conditional orders
+
+    console.log(`Active Orders (Excluding OCO/SLTP): ${activeOrders.length}`);
+
+            // Fetch open positions
+        const activePositionsResponse = await getPositionInfo('category=linear&settleCoin=USDT');
+
+        // Check if the response is valid and contains the list of positions
+        const activePositions = activePositionsResponse?.result?.list || [];
+
+        console.log(`Active Positions: ${activePositions.length}`);
+        let totaltrades = (activeOrders.length + activePositions.length)
+        console.log(`totaltrades : ${totaltrades}`);
+
+        if (totaltrades> SLallowedPerDay) {
+            console.warn("IT GOES AGAINST THE SL ALLOWED PER DAY .");
+            return;
+        }
             // Get reset value from the risk profile
             const resetValue = riskProfile.reset || 10000; // Default to 3 if not provided
             console.log(`Reset value: ${resetValue}`);
@@ -154,13 +231,7 @@
             const initialRisk = riskProfile.initialRiskPerTrade;
             if (!initialRisk || initialRisk <= 0) throwError("Invalid initial risk in active risk profile.");
     
-            // Check for active orders and exclude StopOrder, tpslOrder, OcoOrder, and BidirectionalTpslOrder
-            const orderListResponse = await getOrderList("category=linear&settleCoin=USDT");
-    
-            const activeOrders = orderListResponse?.result?.list?.filter(order => {
-                // Exclude conditional orders like StopLoss and TakeProfit
-                return !order.stopOrderType; // Only include orders without a stopOrderType
-            });
+        
             
             if (activeOrders?.length > 0) {
                 console.warn("Active market/limit orders found. Cannot place a new order.");
@@ -177,7 +248,7 @@
     
             // Closed PnL endpoint
             const pnlendpoint = "/v5/position/closed-pnl";
-            const pnlResponse = await http_request(pnlendpoint, "GET", "category=linear", "Get Closed PnL");
+            const allpnlResponse = await http_request(pnlendpoint, "GET", "category=linear", "Get Closed PnL");
     
             let adjustedRisk = initialRisk;
     
@@ -192,8 +263,8 @@
             // If it's the first trade or we need to reset, use only the initial risk
             if (isFirstTrade) {
                 console.warn("First trade or reset occurred. Using initial risk.");
-            } else if (pnlResponse?.result?.list?.length) {
-                const lastTrade = pnlResponse.result.list[0];
+            } else if (allpnlResponse?.result?.list?.length) {
+                const lastTrade = allpnlResponse.result.list[0];
                 const lastTradeResult = parseFloat(lastTrade.closedPnl) > 0 ? "Win" : "Loss";
     
                 // Adjust the risk based on the previous trade result
@@ -523,172 +594,181 @@
 
                 // Example usage function
                 // async function runTestCase() {
-                //     try {
+                // //     try {
         
-                //         // const closedPnlData = 'category=linear';
+                // //         // const closedPnlData = 'category=linear';
+
+                // //         // Get closed PnL data and calculate metrics
+                // //         // const closedPnlResult = await getClosedPnl(closedPnlData);
+
+                // //         // if (closedPnlResult) {
+                // //         //     const { metrics, bestCoins, worstCoins } = closedPnlResult;
+
+                // //         //     console.log("Total Trades:", metrics.totalTrades);
+                // //         //     console.log("Average Trade Output:", metrics.avgTradeOutput.toFixed(2));
+                // //         //     console.log("Average Winning Trade:", metrics.avgWinningTrade.toFixed(2));
+                // //         //     console.log("Average Losing Trade:", metrics.avgLosingTrade.toFixed(2));
+                // //         //     console.log("Win Rate:", metrics.winRate.toFixed(2) + "%");
+
+                // //         //     console.log("Top 5 Best Traded Coins:");
+                // //         //     bestCoins.forEach((coin, index) =>
+                // //         //         console.log(`${index + 1}. ${coin.symbol}: Total PnL = ${coin.totalPnL.toFixed(2)}`)
+                // //         //     );
+
+                // //         //     console.log("Top 5 Worst Traded Coins:");
+                // //         //     worstCoins.forEach((coin, index) =>
+                // //         //         console.log(`${index + 1}. ${coin.symbol}: Total Loss = ${coin.totalLoss.toFixed(2)}`)
+                // //         //     );
+                // //         // } else {
+                // //         //     console.log("No trades available for analysis.");
+                // //         // }
+                    
+                // //         const orderData = {
+                // //             category: "linear",
+                // //             symbol: "BTCUSDT",
+                // //             side: "Buy",
+                // //             positionIdx: 0,
+                // //             orderType: "Market",
+                // //                 qty: "0.001",
+                // //                 price: "94000",
+                // //                 takeProfit:"100000",
+                // //                 stopLoss:"93000",
+                // //             timeInForce: "GTC",
+                // //         };
+                        
+                // //         // placeOrder(orderData);
+                // //         placeOrderWithRiskProfile(orderData)
+                // //             .then(response => console.log("Order Response:", response))
+                // //             .catch(error => console.error("Order Error:", error.message));
+
+                // //             setTimeout(() => {
+                // //             const order2Data = {
+                // //                 category: "linear",
+                // //                 symbol: "BTCUSDT",
+                // //                 side: "Buy",
+                // //                 positionIdx: 0,
+                // //                 orderType: "Limit",
+                // //                 qty: "0.001",
+                // //                 price: "89000",
+                // //                 takeProfit:"90000",
+                // //                 stopLoss:"88000",
+                // //                 timeInForce: "GTC",
+                // //             };
+                            
+                            
+                // //             placeOrderWithRiskProfile(order2Data)
+                // //                 .then(response => console.log("Order Response:", response))
+                // //                 .catch(error => console.error("Order Error:", error.message));
+                // //             }, 2000); // 2000 milliseconds = 2 seconds
+
+
+
+
+
+                // //     //     let leverageData = {
+                // //     //         category: "linear",
+                // //     //         symbol: "BTCUSDT",
+                // //     //         buyLeverage: "20",
+                // //     //         sellLeverage: "20",
+                // //     //         tradeMode: 0,  // 0 for Isolated, 1 for Cross
+                // //     //     };
+
+                // //     //     const leverageResponse = await setLeverage(leverageData);
+                // //     //     console.log("Set Leverage Response:", leverageResponse);
+
+                // //     //     const marginResponse = await switchMarginMode(leverageData);
+                // //     //     console.log("Switch Margin Mode Response:", marginResponse);
+
+                    
+                // //     //     const createdOrder = await placeOrder(orderData);
+                // //     //     console.log("Created Order:", createdOrder);
+
+                // //     //     const orderlistdata = 'category=linear&settleCoin=USDT';
+                // //     //     const orderList = await getOrderList(orderlistdata);
+                // //     //     console.log("Order List:", orderList);
+
+                // //     //     const orderLinkId = createdOrder.result.orderLinkId;
+
+                // //     //     const newOrderData = {
+                // //     //         category: "linear",
+                // //     //         symbol: "BTCUSDT",
+                // //     //         side: "Buy",
+                // //     //         positionIdx: 0,
+                // //     //         orderType: "Limit",
+                // //     //         qty: "0.08",
+                // //     //         price: "10000",
+                // //     //         timeInForce: "GTC",
+                // //     //         orderLinkId: orderLinkId,
+                // //     //     };
+
+                // //     //     const amendedOrder = await ammendOrder(newOrderData);
+                // //     //     console.log("Amended Order:", amendedOrder);
+
+                // //     //     const newOrderList = await getOrderList(orderlistdata);
+                // //     //     console.log("Updated Order List:", newOrderList);
+
+                // //     //     const positionData = 'category=linear&settleCoin=USDT&symbol=BTCUSDT';
+                // //     //     const positionInfo = await getPositionInfo(positionData);
+                // //     //     console.log("Position Info:", positionInfo);
+
+                // //     //     const cancelResponse = await cancelOrder(orderLinkId);
+                // //     //     console.log("Cancel Order Response:", cancelResponse);
+                // const startOfDay = new Date(new Date().setHours(0, 0, 0, 0)).getTime(); // Midnight timestamp for today
+                // const endOfDay = new Date(new Date().setHours(23, 59, 59, 999)).getTime(); // End of the day timestamp
+        
+                // console.log(startOfDay); // Logs the start of the day timestamp
+                // console.log(endOfDay); 
+                // const pnlData = `category=linear&startTime=${startOfDay}&endTime=${endOfDay}`
+                // // {
+                // //     category: "Linear",  // Use "linear" or "inverse" based on your requirements
+                // //     // startTime: startOfDay,  // Start timestamp of the day
+                // //     // endTime: endOfDay,      // End timestamp of the day
+                // //     // limit: 200,             // Limit the number of results (adjust as necessary)
+                // // };
 
                 //         // Get closed PnL data and calculate metrics
-                //         // const closedPnlResult = await getClosedPnl(closedPnlData);
+                //          getClosedPnl(pnlData);
 
-                //         // if (closedPnlResult) {
-                //         //     const { metrics, bestCoins, worstCoins } = closedPnlResult;
+                // //     //     if (closedPnlResult) {
+                // //     //         const { metrics, bestCoins, worstCoins } = closedPnlResult;
 
-                //         //     console.log("Total Trades:", metrics.totalTrades);
-                //         //     console.log("Average Trade Output:", metrics.avgTradeOutput.toFixed(2));
-                //         //     console.log("Average Winning Trade:", metrics.avgWinningTrade.toFixed(2));
-                //         //     console.log("Average Losing Trade:", metrics.avgLosingTrade.toFixed(2));
-                //         //     console.log("Win Rate:", metrics.winRate.toFixed(2) + "%");
+                // //     //         console.log("Total Trades:", metrics.totalTrades);
+                // //     //         console.log("Average Trade Output:", metrics.avgTradeOutput.toFixed(2));
+                // //     //         console.log("Average Winning Trade:", metrics.avgWinningTrade.toFixed(2));
+                // //     //         console.log("Average Losing Trade:", metrics.avgLosingTrade.toFixed(2));
+                // //     //         console.log("Win Rate:", metrics.winRate.toFixed(2) + "%");
 
-                //         //     console.log("Top 5 Best Traded Coins:");
-                //         //     bestCoins.forEach((coin, index) =>
-                //         //         console.log(`${index + 1}. ${coin.symbol}: Total PnL = ${coin.totalPnL.toFixed(2)}`)
-                //         //     );
+                // //     //         console.log("Top 5 Best Traded Coins:");
+                // //     //         bestCoins.forEach((coin, index) =>
+                // //     //             console.log(`${index + 1}. ${coin.symbol}: Total PnL = ${coin.totalPnL.toFixed(2)}`)
+                // //     //         );
 
-                //         //     console.log("Top 5 Worst Traded Coins:");
-                //         //     worstCoins.forEach((coin, index) =>
-                //         //         console.log(`${index + 1}. ${coin.symbol}: Total Loss = ${coin.totalLoss.toFixed(2)}`)
-                //         //     );
-                //         // } else {
-                //         //     console.log("No trades available for analysis.");
-                //         // }
+                // //     //         console.log("Top 5 Worst Traded Coins:");
+                // //     //         worstCoins.forEach((coin, index) =>
+                // //     //             console.log(`${index + 1}. ${coin.symbol}: Total Loss = ${coin.totalLoss.toFixed(2)}`)
+                // //     //         );
+                // //     //     } else {
+                // //     //         console.log("No trades available for analysis.");
+                // //     //     }
                     
-                //         const orderData = {
-                //             category: "linear",
-                //             symbol: "BTCUSDT",
-                //             side: "Buy",
-                //             positionIdx: 0,
-                //             orderType: "Market",
-                //                 qty: "0.001",
-                //                 price: "94000",
-                //                 takeProfit:"100000",
-                //                 stopLoss:"93000",
-                //             timeInForce: "GTC",
-                //         };
-                        
-                //         // placeOrder(orderData);
-                //         placeOrderWithRiskProfile(orderData)
-                //             .then(response => console.log("Order Response:", response))
-                //             .catch(error => console.error("Order Error:", error.message));
+                // //     //     const balanceData = 'accountType=UNIFIED';
+                // //     //     const accountBalance = await getAccountBalance(balanceData);
+                // //     //     console.log("Account Balance:", accountBalance);
 
-                //             setTimeout(() => {
-                //             const order2Data = {
-                //                 category: "linear",
-                //                 symbol: "BTCUSDT",
-                //                 side: "Buy",
-                //                 positionIdx: 0,
-                //                 orderType: "Limit",
-                //                 qty: "0.001",
-                //                 price: "89000",
-                //                 takeProfit:"90000",
-                //                 stopLoss:"88000",
-                //                 timeInForce: "GTC",
-                //             };
-                            
-                            
-                //             placeOrderWithRiskProfile(order2Data)
-                //                 .then(response => console.log("Order Response:", response))
-                //                 .catch(error => console.error("Order Error:", error.message));
-                //             }, 2000); // 2000 milliseconds = 2 seconds
+                // //     //     const coinBalanceData = 'accountType=UNIFIED';
+                // //     //     const coinBalance = await getCoinBalance(coinBalanceData);
+                // //     //     console.log("Coin Balance:", coinBalance);
 
+                // //     //     const coinSymbol = 'BTC';
+                // //     //     const singleCoinBalance = await getSingleCoinBalance(coinSymbol);
+                // //     //     console.log(`${coinSymbol} Balance:`, singleCoinBalance);
 
-
-
-
-                //     //     let leverageData = {
-                //     //         category: "linear",
-                //     //         symbol: "BTCUSDT",
-                //     //         buyLeverage: "20",
-                //     //         sellLeverage: "20",
-                //     //         tradeMode: 0,  // 0 for Isolated, 1 for Cross
-                //     //     };
-
-                //     //     const leverageResponse = await setLeverage(leverageData);
-                //     //     console.log("Set Leverage Response:", leverageResponse);
-
-                //     //     const marginResponse = await switchMarginMode(leverageData);
-                //     //     console.log("Switch Margin Mode Response:", marginResponse);
-
-                    
-                //     //     const createdOrder = await placeOrder(orderData);
-                //     //     console.log("Created Order:", createdOrder);
-
-                //     //     const orderlistdata = 'category=linear&settleCoin=USDT';
-                //     //     const orderList = await getOrderList(orderlistdata);
-                //     //     console.log("Order List:", orderList);
-
-                //     //     const orderLinkId = createdOrder.result.orderLinkId;
-
-                //     //     const newOrderData = {
-                //     //         category: "linear",
-                //     //         symbol: "BTCUSDT",
-                //     //         side: "Buy",
-                //     //         positionIdx: 0,
-                //     //         orderType: "Limit",
-                //     //         qty: "0.08",
-                //     //         price: "10000",
-                //     //         timeInForce: "GTC",
-                //     //         orderLinkId: orderLinkId,
-                //     //     };
-
-                //     //     const amendedOrder = await ammendOrder(newOrderData);
-                //     //     console.log("Amended Order:", amendedOrder);
-
-                //     //     const newOrderList = await getOrderList(orderlistdata);
-                //     //     console.log("Updated Order List:", newOrderList);
-
-                //     //     const positionData = 'category=linear&settleCoin=USDT&symbol=BTCUSDT';
-                //     //     const positionInfo = await getPositionInfo(positionData);
-                //     //     console.log("Position Info:", positionInfo);
-
-                //     //     const cancelResponse = await cancelOrder(orderLinkId);
-                //     //     console.log("Cancel Order Response:", cancelResponse);
-
-                        
-                //     //     const closedPnlData = 'category=linear';
-
-                //     //     // Get closed PnL data and calculate metrics
-                //     //     const closedPnlResult = await getClosedPnl(closedPnlData);
-
-                //     //     if (closedPnlResult) {
-                //     //         const { metrics, bestCoins, worstCoins } = closedPnlResult;
-
-                //     //         console.log("Total Trades:", metrics.totalTrades);
-                //     //         console.log("Average Trade Output:", metrics.avgTradeOutput.toFixed(2));
-                //     //         console.log("Average Winning Trade:", metrics.avgWinningTrade.toFixed(2));
-                //     //         console.log("Average Losing Trade:", metrics.avgLosingTrade.toFixed(2));
-                //     //         console.log("Win Rate:", metrics.winRate.toFixed(2) + "%");
-
-                //     //         console.log("Top 5 Best Traded Coins:");
-                //     //         bestCoins.forEach((coin, index) =>
-                //     //             console.log(`${index + 1}. ${coin.symbol}: Total PnL = ${coin.totalPnL.toFixed(2)}`)
-                //     //         );
-
-                //     //         console.log("Top 5 Worst Traded Coins:");
-                //     //         worstCoins.forEach((coin, index) =>
-                //     //             console.log(`${index + 1}. ${coin.symbol}: Total Loss = ${coin.totalLoss.toFixed(2)}`)
-                //     //         );
-                //     //     } else {
-                //     //         console.log("No trades available for analysis.");
-                //     //     }
-                    
-                //     //     const balanceData = 'accountType=UNIFIED';
-                //     //     const accountBalance = await getAccountBalance(balanceData);
-                //     //     console.log("Account Balance:", accountBalance);
-
-                //     //     const coinBalanceData = 'accountType=UNIFIED';
-                //     //     const coinBalance = await getCoinBalance(coinBalanceData);
-                //     //     console.log("Coin Balance:", coinBalance);
-
-                //     //     const coinSymbol = 'BTC';
-                //     //     const singleCoinBalance = await getSingleCoinBalance(coinSymbol);
-                //     //     console.log(`${coinSymbol} Balance:`, singleCoinBalance);
-
-                //     } catch (error) {
-                //         console.error("Error in TestCase:", error.message);
-                //     }
+                // //     } catch (error) {
+                // //         console.error("Error in TestCase:", error.message);
+                // //     }
                 // }
 
-                // Execute the functions
+                // // Execute the functions
                 // runTestCase();
 
                 // Export all functions for use in other parts of the application
