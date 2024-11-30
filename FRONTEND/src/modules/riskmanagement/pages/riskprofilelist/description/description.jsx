@@ -57,8 +57,7 @@ const Description = () => {
         <li><strong>Reset:</strong> {riskProfile.reset}</li>
         <li><strong>Growth Threshold:</strong> {riskProfile.growthThreshold}</li>
         <li><strong>Payout Percentage:</strong> {riskProfile.payoutPercentage}</li>
-        <li><strong>Number of Active Trades:</strong> {riskProfile.noofactivetrades}</li>
-        <li><strong>Created At:</strong> {new Date(riskProfile.createdAt).toLocaleDateString()}</li>
+         <li><strong>Created At:</strong> {new Date(riskProfile.createdAt).toLocaleDateString()}</li>
       </ul>
     </div>
   );
