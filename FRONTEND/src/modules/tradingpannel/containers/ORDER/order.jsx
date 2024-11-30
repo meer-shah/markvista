@@ -209,7 +209,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
             />
           </div>
         </div>
-
+{/* 
         <div className="position-section">
           <span
             className={`position-text ${positionType === 'open' ? 'active' : ''}`}
@@ -223,7 +223,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
           >
             Close
           </span>
-        </div>
+        </div> */}
 
         {positionType && (
           <div className="order-type-section">
@@ -233,12 +233,12 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
             >
               Limit
             </span>
-            <span
+            {/* <span
               className={`order-type-text ${orderType === 'market' ? 'active' : ''}`}
               onClick={() => handleOrderTypeChange('market')}
             >
               Market
-            </span>
+            </span> */}
           </div>
         )}
 
@@ -269,7 +269,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
                 className={`quantity-option ${quantityType === 'USDT' ? 'active' : ''}`}
                 onClick={() => handleQuantityTypeChange('USDT')}
               >
-                USDT
+                will be determined by Risk profile
               </span>
               {/* <span
                 className={`quantity-option ${quantityType === 'Asset' ? 'active' : ''}`}
@@ -279,15 +279,15 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
               </span> */}
             </div>
           </div>
-
+{/* 
           <input
             id="orderQuantity"
             type="number"
             value={orderQuantity}
             onChange={(e) => handleOrderQuantityChange(e.target.value)}
-          />
+          /> */}
 
-          <input
+          {/* <input
             id="quantitySlider"
             type="range"
             min="0"
@@ -296,7 +296,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
             value={(orderQuantity / (positionType === 'open' ? initialBalance : initialQuantity)) * 100}
             onChange={(e) => handleQuantitySliderChange(e.target.value)}
             className="quantity-slider"
-          />
+          /> */}
 
           {positionType === 'open' && orderType === 'limit' && (
             <>
@@ -316,7 +316,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
               />
             </>
           )}
-
+{/* 
           {positionType === 'open' && orderType === 'market' && (
             <>
               <label htmlFor="takeProfit">Take Profit:</label>
@@ -334,7 +334,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
                 onChange={(e) => setStopLoss(e.target.value)}
               />
             </>
-          )}
+          )} */}
 
           <div className="action-buttons">
             {positionType === 'open' ? (
