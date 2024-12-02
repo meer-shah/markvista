@@ -29,4 +29,7 @@ router.patch('/:id', updateRiskProfile);
 router.put('/:id/activate', activateprofile); // Activate/deactivate risk profile
 
 
+
 module.exports = router;
+
+

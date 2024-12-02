@@ -13,7 +13,7 @@
                 const apiKey = "Y1rRqFvBHiIS3YAlcB";  // Your API key
                 const secret = "gB6SF4CKIixKPBtxEKSeA3J1jpYlDmQLwzkN";  // Your secret key
 
-                const recvWindow = 750000;  // Maximum window for receiving the response (in ms)
+                const recvWindow = 5500000;  // Maximum window for receiving the response (in ms)
                 const timestamp = Date.now().toString();  // Current timestamp for signing requests
 
             
@@ -79,7 +79,14 @@
                 console.error(message);
                 throw new Error(message);
             };
+
+
+
             
+
+
+
+
             // Helper function to calculate adjusted risk
             const calculateAdjustedRisk = (lastAdjustedRisk, riskProfile, lastTradeResult) => {
                 let adjustedRisk = lastAdjustedRisk;
@@ -113,7 +120,7 @@
             // Place an order with a risk profile
         // Flag to track if this is the first trade (initial trade)
     // Flag to track if this is the first trade (initial trade)
-    let isFirstTrade = adjustedRiskArray.length === 0;
+    // let isFirstTrade = adjustedRiskArray.length === 0;
 
 
     // Track the consecutive wins and losses
@@ -121,11 +128,20 @@
     let consecutiveLosses = 0;
         const placeOrderWithRiskProfile = async (data) => {
         try {
+
             // Fetch the active risk profile
             const riskProfile = await RiskProfile.findOne({ ison: true });
             if (!riskProfile) throwError("No active risk profile found.");
     
             console.log("Active Risk Profile:", riskProfile);
+            let prevrisk = riskProfile.previousrisk || 0;
+            let currrisk = riskProfile.currentrisk || 0;
+            console.log(prevrisk)
+            console.log(currrisk)
+            // Determine if it's the first trade
+            let isFirstTrade = prevrisk === 0 && currrisk === 0;
+
+            
     // Retrieve SLallowedPerDay from risk profile
     let SLallowedPerDay = riskProfile.SLallowedperday || 1000; // Default to 1000 if not provided
     console.log(`SL Allowed Per Day: ${SLallowedPerDay}`);
@@ -249,8 +265,8 @@ if (SLallowedPerDay <= 0) {
             const pnlendpoint = "/v5/position/closed-pnl";
             const allpnlResponse = await http_request(pnlendpoint, "GET", "category=linear", "Get Closed PnL");
     
-            let adjustedRisk = initialRisk;
-            let lastAdjustedRisk = adjustedRiskArray[adjustedRiskArray.length - 1] || initialRisk;
+            let adjustedRisk = currrisk;
+            let lastAdjustedRisk = prevrisk ;
 
             // Check if we need to reset the trade sequence based on consecutive wins/losses
             if (consecutiveWins >= resetValue || consecutiveLosses >= resetValue) {
@@ -262,13 +278,19 @@ if (SLallowedPerDay <= 0) {
     
             // If it's the first trade or we need to reset, use only the initial risk
             if (isFirstTrade) {
+                adjustedRisk = initialRisk;
+                riskProfile.currentrisk= adjustedRisk;
                 console.warn("First trade or reset occurred. Using initial risk.");
+                console.log(prevrisk)
+                console.log(currrisk)
             } 
             else if (allpnlResponse?.result?.list?.length) {
                 const lastTrade = allpnlResponse.result.list[0];
                 const lastTradeResult = parseFloat(lastTrade.closedPnl) > 0 ? "Win" : "Loss";
     
                 // Adjust the risk based on the previous trade result
+                riskProfile.previousrisk=currrisk;
+                lastAdjustedRisk=currrisk;
                 adjustedRisk = calculateAdjustedRisk(lastAdjustedRisk, riskProfile, lastTradeResult);
     
                 // Track consecutive wins or losses
@@ -327,15 +349,16 @@ if (SLallowedPerDay <= 0) {
             console.log(`Order quantity adjusted to: ${newQty}`);
     
             // Append adjusted risk and place the order
-            adjustedRiskArray.push(adjustedRisk);
+            
     
             // After the first trade, set the flag to false so future trades will use the adjusted risk based on previous trades
             isFirstTrade = false;
-    
+            riskProfile.currentrisk= adjustedRisk;
+            await riskProfile.save();
             await simplePlaceOrder(data);
+            
 
-
-        console.log(adjustedRiskArray)
+       
         } catch (error) {
             throwError(`Error in placeOrderWithRiskProfile: ${error.message}`);
         }
@@ -403,18 +426,28 @@ if (SLallowedPerDay <= 0) {
                 };
 
                 
-                const getOrderList = async (data) => {
+                const getOrderList = async () => {
                     const endpoint = "/v5/order/realtime";  // API endpoint for fetching orders
-                    return await http_request(endpoint, "GET", data, "Get Order List");  // Call the API
+                   return await http_request(endpoint, "GET", 'category=linear&settleCoin=USDT', "Get Order List");  // Call the API
+                    
+                };
+
+                const getOrderListf = async (req , res) => {
+                    const endpoint = "/v5/order/realtime";  // API endpoint for fetching orders
+                   let Result = await http_request(endpoint, "GET", 'category=linear&settleCoin=USDT', "Get Order List");  // Call the API
+                    let data = Result.result?.list?.filter(order => !order.stopOrderType)
+                   res.send(data);
                 };
 
             
-                const cancelOrder = async (data) => {
+                const cancelOrder = async (req,res) => {
+
+                    let data = req.body;
+                    console.log("daya",data)
                     try {
-                        const endpoint = "/v5/order/cancel-all";  // API endpoint for cancelling orders
-                        const response = await http_request(endpoint, "POST", data, "Cancel all Order");  // Call the API
-                        
-                        console.log("Order cancellation successful:", response);
+                        const endpoint = "/v5/order/cancel";  // API endpoint for cancelling orders
+                        const response = await http_request(endpoint, "POST", `category=${data.category}&symbol=${data.symbol}`, "Cancel  Order");  // Call the API
+                        console.log("Order cancellation successful:", response.json());
                 
                         // Remove the last element from the adjustedRiskArray
                         if (adjustedRiskArray.length > 0) {
@@ -424,7 +457,8 @@ if (SLallowedPerDay <= 0) {
                             console.warn("adjustedRiskArray is empty. Nothing to remove.");
                         }
                 
-                        return response;
+                        // return response;
+                        res.send(response);
                     } catch (error) {
                         throw new Error(`Failed to cancel orders: ${error.message}`);
                     }
@@ -439,12 +473,19 @@ if (SLallowedPerDay <= 0) {
                 };
 
                 
-                const getPositionInfo = async (data) => {
+                const getPositionInfo = async () => {
                     const endpoint = "/v5/position/list";  // API endpoint for position info
-                    return await http_request(endpoint, "GET", data, "Get Position Info");  // Call the API
+                
+                    return await http_request(endpoint, "GET", 'category=linear&settleCoin=USDT', "Get Position Info");  // Call the API
+                    
                 };
 
-            
+                const getPositionInfof = async (req , res ) => {
+                    const endpoint = "/v5/position/list";  // API endpoint for position info
+                
+                    let data = await http_request(endpoint, "GET", 'category=linear&settleCoin=USDT', "Get Position Info");  // Call the API
+                    res.send(data)
+                };
                 
                 const setLeverage = async (data) => {
                     const endpoint = "/v5/position/set-leverage";  // API endpoint for setting leverage
@@ -484,7 +525,13 @@ if (SLallowedPerDay <= 0) {
                     const avgWinningTrade = winCount > 0 ? totalWinningPnL / winCount : 0;
                     const avgLosingTrade = lossCount > 0 ? totalLosingPnL / lossCount : 0;
                     const winRate = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
-
+// res.send(
+//     totalTrades,
+//                         avgTradeOutput,
+//                         avgWinningTrade,
+//                         avgLosingTrade,
+//                         winRate,
+// )
                     return {
                         totalTrades,
                         avgTradeOutput,
@@ -549,9 +596,9 @@ if (SLallowedPerDay <= 0) {
                 }
 
                 // Retrieve closed PnL and calculate metrics including top/worst coins
-                const getClosedPnl = async (data) => {
+                const getClosedPnl = async () => {
                     const endpoint = "/v5/position/closed-pnl"; // API endpoint for getting closed PnL
-                    const response = await http_request(endpoint, "GET", data, "Get Closed PnL"); // Call the API
+                    const response = await http_request(endpoint, "GET", 'category=linear', "Get Closed PnL"); // Call the API
 
                     if (response && response.result && response.result.list) {
                         const trades = response.result.list; // Extract the list of trades
@@ -578,7 +625,34 @@ if (SLallowedPerDay <= 0) {
                     }
                 };
 
+                const getClosedPnlf = async (req , res) => {
+                    const endpoint = "/v5/position/closed-pnl"; // API endpoint for getting closed PnL
+                    const response = await http_request(endpoint, "GET", 'category=linear', "Get Closed PnL"); // Call the API
 
+                    if (response && response.result && response.result.list) {
+                        const trades = response.result.list; // Extract the list of trades
+                        console.log("Closed PnL Trades:", trades);
+
+                        // Calculate trade metrics
+                        const metrics = calculateTradeMetrics(trades);
+                        console.log("Trade Metrics:", metrics);
+
+                        // Find best and worst trades
+                        const { bestTrade, worstTrade } = findBestAndWorstTrade(trades);
+                        console.log("Best Trade:", bestTrade);
+                        console.log("Worst Trade:", worstTrade);
+
+                        // Analyze coin performance
+                        const { bestCoins, worstCoins } = analyzeCoinPerformance(trades);
+                        console.log("Top 5 Best Coins:", bestCoins);
+                        console.log("Top 5 Worst Coins:", worstCoins);
+
+                        res.send ({ trades, metrics, bestTrade, worstTrade, bestCoins, worstCoins });
+                    } else {
+                        console.error("Error: No closed PnL data received.");
+                        return null;
+                    }
+                };
 
                 const getAccountBalance = async (data) => {
                     const endpoint = "/v5/account/wallet-balance";  // API endpoint for getting account balance
@@ -781,13 +855,13 @@ if (SLallowedPerDay <= 0) {
                 module.exports = {
                     placeOrder,
                     placeOrderWithRiskProfile, // Included this one for placing orders with risk profile
-                    getOrderList, // Fetch pending orders
+                    getOrderListf, // Fetch pending orders
                     cancelOrder,
                     ammendOrder,
-                    getPositionInfo, // Active position info
+                    getPositionInfof, // Active position info
                     setLeverage,
                     switchMarginMode,
-                    getClosedPnl, // Trade performance and risk profile conditions
+                    getClosedPnlf, // Trade performance and risk profile conditions
                     getAccountBalance, // For user portfolio balance
                     getCoinBalance,
                     getSingleCoinBalance,

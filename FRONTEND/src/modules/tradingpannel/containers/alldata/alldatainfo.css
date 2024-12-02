@@ -28,7 +28,15 @@
   
   .heading-row, .data-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    font-size: 0.8em;
+    margin-bottom: 10px;
+    
+  }
+  .heading-row1, .data-row1 {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
     gap: 10px;
     font-size: 0.8em;
     margin-bottom: 10px;
@@ -40,6 +48,13 @@
   .heading-row{
     color: var(--color-detailing);
     margin-bottom: 20px;
+    /* overflow-x: auto; */
+  }
+  
+  .heading-row1{
+    color: var(--color-detailing);
+    margin-bottom: 20px;
+    /* overflow-x: auto; */
   }
   .close-by {
     display: flex;

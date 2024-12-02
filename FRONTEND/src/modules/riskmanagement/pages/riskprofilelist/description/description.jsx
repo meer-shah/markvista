@@ -43,7 +43,7 @@ const Description = () => {
   return (
     <div className={'app__wrapper main'}>
       <p className='small__heading'>{riskProfile.title}</p>
-      <p className={'app__wrapper_info p__basic'}>
+      <p className={' p__basic'}>
         {riskProfile.description || 'No description available'}
       </p>
       <ul className={'risk-profile-details p__basic'}>

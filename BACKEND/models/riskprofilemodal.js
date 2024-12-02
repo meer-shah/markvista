@@ -1,21 +1,32 @@
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const riskProfileSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
   },
+  previousrisk: {
+    type: Number,
+    default: 0,
+  },
+  currentrisk: {
+    type: Number,
+    default: 0,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   SLallowedperday: {
-    type: Number
+    type: Number,
   },
   initialRiskPerTrade: {
     type: Number,
-    required: true
+    required: true,
   },
   increaseOnWin: {
     type: Number,
@@ -41,36 +52,27 @@ const riskProfileSchema = new Schema({
   noofactivetrades: {
     type: Number,
   },
-  minRiskRewardRatio: { // New field added here
+  minRiskRewardRatio: {
     type: Number,
-    // or false, depending on your requirements
+  },
+  goals: {
+    type: [
+      {
+        goalType: { type: String, enum: ['Daily', 'Weekly', 'Monthly', 'Quarterly', 'Yearly'] },
+        goalAmount: { type: Number },
+        setAt: { type: Date, default: Date.now },
+      },
+    ],
+    default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   ison: {
     type: Boolean,
     default: false,
-  }
-});
-
-
-
-const dailyLossSchema = new mongoose.Schema(
-  {
-    date: { type: String, required: true }, // Store date as a string in 'YYYY-MM-DD' format
-    totalLoss: { type: Number, default: 0 }, // Store the total losses for the day
   },
-  { timestamps: true }
-);
-
-// Create the model
-const DailyLoss = mongoose.model("DailyLoss", dailyLossSchema);
-
-module.exports = DailyLoss;
-
-
-
+});
 
 module.exports = mongoose.model('RiskProfile', riskProfileSchema);
