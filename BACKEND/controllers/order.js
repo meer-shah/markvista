@@ -8,12 +8,12 @@
                 // const url = 'https://api.bybit.com';  // API base URL
                 // const apiKey = "FdWbqIDBdV5LDOjD5H";  // Your API key
                 // const secret = "6i32BfhTK14YbE8OttN6c8uBQXqbhe7C6GYJ";  // Your secret key
-                //demo account 
+                // //demo account 
                 const url = 'https://api-demo.bybit.com';  // API base URL
                 const apiKey = "Y1rRqFvBHiIS3YAlcB";  // Your API key
                 const secret = "gB6SF4CKIixKPBtxEKSeA3J1jpYlDmQLwzkN";  // Your secret key
 
-                const recvWindow = 5500000;  // Maximum window for receiving the response (in ms)
+                const recvWindow = 50000000000;  // Maximum window for receiving the response (in ms)
                 const timestamp = Date.now().toString();  // Current timestamp for signing requests
 
             
@@ -124,8 +124,7 @@
 
 
     // Track the consecutive wins and losses
-    let consecutiveWins = 0;
-    let consecutiveLosses = 0;
+    
         const placeOrderWithRiskProfile = async (data) => {
         try {
 
@@ -133,13 +132,13 @@
             const riskProfile = await RiskProfile.findOne({ ison: true });
             if (!riskProfile) throwError("No active risk profile found.");
     
-            console.log("Active Risk Profile:", riskProfile);
-            let prevrisk = riskProfile.previousrisk || 0;
-            let currrisk = riskProfile.currentrisk || 0;
-            console.log(prevrisk)
-            console.log(currrisk)
-            // Determine if it's the first trade
-            let isFirstTrade = prevrisk === 0 && currrisk === 0;
+        let prevrisk = riskProfile.previousrisk || 0;
+        let currrisk = riskProfile.currentrisk || 0;
+        let consecutiveWins = riskProfile.consecutiveWins || 0;
+        let consecutiveLosses = riskProfile.consecutiveLosses || 0;
+        let isFirstTrade = prevrisk === 0 && currrisk === 0;
+        console.log(`Previous Risk: ${prevrisk}, Current Risk: ${currrisk}`);
+        console.log(`Consecutive Wins: ${consecutiveWins}, Consecutive Losses: ${consecutiveLosses}`);
 
             
     // Retrieve SLallowedPerDay from risk profile
@@ -272,8 +271,8 @@ if (SLallowedPerDay <= 0) {
             if (consecutiveWins >= resetValue || consecutiveLosses >= resetValue) {
                 console.log("Consecutive wins/losses threshold reached. Resetting to initial risk.");
                 isFirstTrade = true; // Treat the next trade as a "first trade"
-                consecutiveWins = 0;
-                consecutiveLosses = 0;
+                riskProfile.consecutiveWins = 0;
+                riskProfile.consecutiveLosses = 0;
             }
     
             // If it's the first trade or we need to reset, use only the initial risk
@@ -295,11 +294,11 @@ if (SLallowedPerDay <= 0) {
     
                 // Track consecutive wins or losses
                 if (lastTradeResult === "Win") {
-                    consecutiveWins++;
-                    consecutiveLosses = 0; // Reset loss streak
+                    riskProfile.consecutiveWins++;
+                    riskProfile.consecutiveLosses = 0; // Reset loss streak
                 } else {
-                    consecutiveLosses++;
-                    consecutiveWins = 0; // Reset win streak
+                    riskProfile.consecutiveLosses++;
+                    riskProfile.consecutiveWins = 0; // Reset win streak
                 }
             } else {
                 console.warn("No closed trades available or it's the first trade. Using initial risk.");
@@ -358,7 +357,6 @@ if (SLallowedPerDay <= 0) {
             await simplePlaceOrder(data);
             
 
-       
         } catch (error) {
             throwError(`Error in placeOrderWithRiskProfile: ${error.message}`);
         }
@@ -424,7 +422,11 @@ if (SLallowedPerDay <= 0) {
                 // If no USDT balance is found, return 0
                 return 0;
                 };
-
+                const showusdtbalance =async (req, res)=>{
+                    const accountBalanceResponse = await getAccountBalance("accountType=UNIFIED");
+                    const usdtBalance = getUsdtBalance(accountBalanceResponse);
+                    res.send(usdtBalance)
+                }
                 
                 const getOrderList = async () => {
                     const endpoint = "/v5/order/realtime";  // API endpoint for fetching orders
@@ -486,17 +488,42 @@ if (SLallowedPerDay <= 0) {
                     let data = await http_request(endpoint, "GET", 'category=linear&settleCoin=USDT', "Get Position Info");  // Call the API
                     res.send(data)
                 };
-                
-                const setLeverage = async (data) => {
-                    const endpoint = "/v5/position/set-leverage";  // API endpoint for setting leverage
-                    return await http_request(endpoint, "POST", JSON.stringify(data), "Set Leverage");  // Call the API
-                };
-
+                const setLeverage = async (req, res) => {
+                    const data = req.body;
+                    
+                    console.log("Received order data from frontend:", data);
             
-                switchMarginMode = async (data) => {
-                    const endpoint = "/v5/position/switch-isolated";  // API endpoint for switching margin mode
-                    return await http_request(endpoint, "POST", JSON.stringify(data), "Switch Margin Mode");  // Call the API
+                    
+                    try {
+                      const endpoint = "/v5/position/set-leverage"; // Replace with the correct endpoint
+                     
+                      const response = await http_request(endpoint, "POST", data, "Set Leverage");
+                  
+                      return res.status(200).json({ message: "Leverage updated successfully", response });
+                    } catch (error) {
+                      console.error("Error setting leverage:", error.message);
+                      res.status(500).json({ error: "Failed to update leverage" });
+                    }
                 };
+                
+            const switchMarginMode = async (req, res) => {
+                const data = req.body;
+                    
+                console.log("Received order data from frontend:", data);
+        
+                // Validate the required fields in the data object
+                
+                try {
+                    const endpoint = "/v5/position/switch-isolated"; // Replace with the correct endpoint
+                    const response = await http_request(endpoint, "POST", data, "Switch Margin Mode");
+                
+                    return res.status(200).json({ message: "Margin mode updated successfully", response });
+                } catch (error) {
+                    console.error("Error switching margin mode:", error.message);
+                    res.status(500).json({ error: "Failed to switch margin mode" });
+                }
+                };
+                
 
                 // Function to calculate trade metrics
                 function calculateTradeMetrics(trades) {
@@ -663,8 +690,33 @@ if (SLallowedPerDay <= 0) {
                     const endpoint = "/v5/asset/transfer/query-account-coins-balance";  // API endpoint for getting coin balances
                     return await http_request(endpoint, "GET", data, "Get Coin Balance");  // Call the API
                 };
+                const gettransactionlog = async (req, res) => {
+                    try {
+                      // Get the current timestamp (end time)
+                      const currentTimestamp = Date.now();
+                  
+                      // Calculate the start timestamp for one year ago
+                      const startTimestamp = currentTimestamp - (7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
 
-               
+                      // Create the data object with startTime and endTime
+                      const data = `category=linear&accountType=UNIFIED&baseCoin=USDT`;
+
+                      // Set up the API endpoint
+                      const endpoint = "/v5/account/transaction-log";  // API endpoint for getting transaction logs
+                  
+                      // Call the API to get the transaction logs
+                      const response = await http_request(endpoint, "GET", data, "Get transaction log:");
+                  console.log(response)
+                      // Return the response or process the data as needed
+                      return res.json(response); 
+                  
+                    } catch (error) {
+                      console.error("Error fetching transaction logs:", error);
+                      return res.status(500).json({ error: "Failed to fetch transaction logs" });
+                    }
+                  };
+                  
+
                 const getSingleCoinBalance = async (symbol) => {
                     const data = `accountType=UNIFIED&coin=${symbol}`;  // Coin balance request data
                     const endpoint = "/v5/asset/transfer/query-account-coins-balance";  // API endpoint for getting single coin balance
@@ -865,5 +917,7 @@ if (SLallowedPerDay <= 0) {
                     getAccountBalance, // For user portfolio balance
                     getCoinBalance,
                     getSingleCoinBalance,
+                    gettransactionlog,
+                    showusdtbalance
                 };
                 

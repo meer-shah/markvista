@@ -17,6 +17,8 @@ const riskProfileSchema = new Schema({
     type: Number,
     default: 0,
   },
+  consecutiveWins: { type: Number, default: 0 }, // Track consecutive wins
+  consecutiveLosses: { type: Number, default: 0 }, // Track consecutive losses
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -70,6 +72,10 @@ const riskProfileSchema = new Schema({
     default: Date.now,
   },
   ison: {
+    type: Boolean,
+    default: false,
+  },
+  default: {
     type: Boolean,
     default: false,
   },

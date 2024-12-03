@@ -2,19 +2,6 @@ import React from 'react';
 import './coinoverview.css'; // Import the CSS file for styling
 
 const TradedTable = ({ title, data, isProfit }) => {
-  const renderLine = (percentage) => {
-    const lineStyle = {
-      width: `${percentage}%`,
-      backgroundColor: isProfit ? 'var(--color-profit)' : 'var(--color-loss)',
-      height: '100%',
-    };
-    return (
-      <div className="line-container">
-        <div className="line" style={lineStyle}></div>
-      </div>
-    );
-  };
-
   return (
     <div className="section">
       <p>{title}</p>
@@ -23,33 +10,21 @@ const TradedTable = ({ title, data, isProfit }) => {
           <thead>
             <tr>
               <th>#</th>
-              <th>Name</th>
-              <th>{isProfit ? 'Profit' : 'Loss'}</th>
-              <th>Holdings</th>
+              <th>Coin</th>
+              <th>{isProfit ? 'Profit (USD)' : 'Loss (USD)'}</th>
             </tr>
           </thead>
         </table>
         <div className="table-body-wrapper height">
-          <table className="table-head">
-            <tbody className="table-body">
-              {data.map((pair) => (
-                <tr key={pair.id}>
-                  <td>{pair.id}</td>
-                  <td>{pair.name}</td>
-                  <td>
-                    {renderLine(isProfit ? pair.profit : pair.loss)}
-                    <br />
-                    {isProfit ? (
-                      <>
-                        {pair.profit}% (${(pair.profit * 10).toFixed(2)})
-                      </>
-                    ) : (
-                      <>
-                        {pair.loss}% (${(pair.loss * 10).toFixed(2)})
-                      </>
-                    )}
+          <table className="table-body">
+            <tbody>
+              {data.map((pair, index) => (
+                <tr key={pair.symbol}>
+                  <td>{index + 1}</td>
+                  <td>{pair.symbol}</td>
+                  <td style={{ color: isProfit ? 'var(--color-profit)' : 'var(--color-loss)' }}>
+                    ${isProfit ? pair.totalPnL.toFixed(2) : pair.totalLoss.toFixed(2)}
                   </td>
-                  <td>{pair.holdings}%</td>
                 </tr>
               ))}
             </tbody>

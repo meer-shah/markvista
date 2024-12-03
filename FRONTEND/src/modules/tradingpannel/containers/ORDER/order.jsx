@@ -7,8 +7,6 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
   const initialQuantity = 100; // Initial asset amount
   const [positionType, setPositionType] = useState('open');
   const [orderType, setOrderType] = useState('limit');
-  const [leverageType, setLeverageType] = useState('cross');
-  const [leverageAmount, setLeverageAmount] = useState(1);
   const [orderPrice, setOrderPrice] = useState('');
   const [orderQuantity, setOrderQuantity] = useState(0);
   const [takeProfit, setTakeProfit] = useState('');
@@ -17,10 +15,12 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
   const [assetAmount, setAssetAmount] = useState(initialQuantity); // Example asset amount
   const [quantityType, setQuantityType] = useState('USDT'); // State to track selected quantity type
   const [riskProfileName, setRiskProfileName] = useState(''); // State to hold the risk profile name
-  const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const [isChecked, setIsChecked] = useState()
   const [activeProfileId, setActiveProfileId] = useState(null);
+  const [leverageType, setLeverageType] = useState("cross"); // Margin mode
+  const [leverageAmount, setLeverageAmount] = useState(1); // Leverage amount
+  const [loading, setLoading] = useState(false); // Loading state for updates
 
 
   const onToggle = async (id) => {
@@ -173,6 +173,74 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
       alert('Open Short Position');
     }
   };
+  const updateLeverageAmount = async (value) => {
+    try {
+      const data = {
+        category: "linear",
+        symbol, // Ensure this has a value
+        buyLeverage: value.toString(),
+        sellLeverage: value.toString(),
+      };
+  
+      const response = await axios.post(
+        "http://localhost:4000/api/order/set-leverage",
+        data, // Pass as an object
+        {
+          headers: { "Content-Type": "application/json" }, // Explicitly set headers
+        }
+      );
+  
+      if (response.status === 200) {
+        console.log("Leverage updated successfully");
+      } else {
+        throw new Error("Failed to update leverage amount.");
+      }
+    } catch (error) {
+      console.error("Error updating leverage amount:", error);
+    }
+  };
+  
+
+  // Update margin mode when user changes it
+  const updateMarginMode = async (value) => {
+    try {
+      const data = {
+        category: "linear",
+        symbol, // Ensure this has a value
+        tradeMode: value === "cross" ? 0 : 1,
+      };
+  
+      const response = await axios.post(
+        "http://localhost:4000/api/order/switch-margin-mode",
+        data, // Pass as an object
+        {
+          headers: { "Content-Type": "application/json" }, // Explicitly set headers
+        }
+      );
+  
+      if (response.status === 200) {
+        console.log("Margin mode updated successfully");
+      } else {
+        throw new Error("Failed to update margin mode.");
+      }
+    } catch (error) {
+      console.error("Error updating margin mode:", error);
+    }
+  };
+  
+
+  // Handle leverage type change
+  const handleLeverageTypeChange = async (value) => {
+    setLeverageType(value); // Update local state
+    await updateMarginMode(value); // Update on backend
+  };
+
+  // Handle leverage amount change
+  const handleLeverageAmountChange = async (value) => {
+    setLeverageAmount(value); // Update local state
+    await updateLeverageAmount(value); // Update on backend
+  };
+
 
   return (
     <div className='main'>
@@ -188,24 +256,16 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
 
       <div className="crypto-leverage-container">
         <div className="leverage-section">
+          
           <div className="leverage-item">
-            <label htmlFor="leverageType">Leverage Type:</label>
-            <select
-              id="leverageType"
-              value={leverageType}
-              onChange={(e) => setLeverageType(e.target.value)}
-            >
-              <option value="cross">Cross</option>
-              <option value="isolated">Isolated</option>
-            </select>
-          </div>
-          <div className="leverage-item">
-            <label htmlFor="leverageAmount">Leverage Amount:</label>
-            <input
+          <label htmlFor="leverageAmount">Leverage Amount:</label>
+          <input
               id="leverageAmount"
               type="number"
+              min="1"
+              max="100"
               value={leverageAmount}
-              onChange={(e) => setLeverageAmount(e.target.value)}
+              onChange={(e) => handleLeverageAmountChange(e.target.value)}
             />
           </div>
         </div>

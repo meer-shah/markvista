@@ -6,7 +6,8 @@ const {
   deleteRiskProfile,
   updateRiskProfile,
   activateprofile,
-  getActiveRiskProfile
+  getActiveRiskProfile,
+  resetdeault
 } = require('../controllers/riskprofilecontroller');
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.get('/:id', getSingleRiskProfile);
 
 // Create a new risk profile
 router.post('/', createRiskProfile);
+router.post('/reset-default', resetdeault);
 
 // Delete a risk profile
 router.delete('/:id', deleteRiskProfile);

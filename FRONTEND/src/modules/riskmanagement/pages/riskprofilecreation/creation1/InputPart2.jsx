@@ -8,6 +8,7 @@ import Main from '../../visualizeandbreakdownpage/main'
 const Inputpart2 = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  
 
   // State for input fields
   const [initialRiskPerTrade, setInitialRiskPerTrade] = useState('');
@@ -19,7 +20,8 @@ const Inputpart2 = () => {
   const [maxRisk, setMaxRisk] = useState('');
   const [minRisk, setMinRisk] = useState('');
   const [payoutPercentage, setPayoutPercentage] = useState('');
-  const [minRiskRewardRatio, setMinRiskRewardRatio] = useState(''); // New field
+  const [minRiskRewardRatio, setMinRiskRewardRatio] = useState('');
+  const [isDefault, setIsDefault] = useState(false); // State for default checkbox
 
   useEffect(() => {
     // Fetch the existing risk profile data for the given ID
@@ -40,7 +42,8 @@ const Inputpart2 = () => {
           setMaxRisk(data.maxRisk || '');
           setMinRisk(data.minRisk || '');
           setPayoutPercentage(data.payoutPercentage || '');
-          setMinRiskRewardRatio(data.minRiskRewardRatio || ''); // Load new field data
+          setMinRiskRewardRatio(data.minRiskRewardRatio || '');
+          setIsDefault(data.default || false); // Pre-fill the checkbox
         } catch (error) {
           console.error('Error fetching risk profile:', error);
         }
@@ -50,40 +53,8 @@ const Inputpart2 = () => {
     }
   }, [id]);
 
-  const applyDefaults = () => {
-    return {
-      initialRiskPerTrade: initialRiskPerTrade || 0,
-      growthThreshold: growthThreshold || 0,
-      increaseOnWin: increaseOnWin || 0,
-      decreaseOnLoss: decreaseOnLoss || 0,
-      SLallowedperday: SLallowedperday ||100,
-      
-      reset: reset || 100000,
-      maxRisk: maxRisk || 100,
-      minRisk: minRisk || 0,
-      payoutPercentage: payoutPercentage || 0,
-      minRiskRewardRatio: minRiskRewardRatio || 1, // Default for new field
-    };
-  };
-
-  const validateInput = () => {
-    // Conversion and validation logic for the new field
-    const numMinRiskRewardRatio = parseFloat(minRiskRewardRatio);
-
-    if (isNaN(numMinRiskRewardRatio) || numMinRiskRewardRatio <= 0) {
-      alert('Minimum Risk to Reward Ratio should be a positive number');
-      return false;
-    }
-
-    // Add other validations here...
-
-    return true;
-  };
-
   const handleSave = async () => {
-    if (!validateInput()) return;
-
-    const {
+    const profileData = {
       initialRiskPerTrade,
       growthThreshold,
       increaseOnWin,
@@ -93,8 +64,9 @@ const Inputpart2 = () => {
       maxRisk,
       minRisk,
       payoutPercentage,
-      minRiskRewardRatio, // Include new field in saved data
-    } = applyDefaults();
+      minRiskRewardRatio,
+      default: isDefault, // Include the default field
+    };
 
     try {
       if (id) {
@@ -103,25 +75,13 @@ const Inputpart2 = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            initialRiskPerTrade,
-            growthThreshold,
-            increaseOnWin,
-            decreaseOnLoss,
-            SLallowedperday,
-            reset,
-            maxRisk,
-            minRisk,
-            payoutPercentage,
-            minRiskRewardRatio, // Send new field
-          }),
+          body: JSON.stringify(profileData),
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Failed to update the risk profile');
         }
       } else {
-        // Fetch name and description from local storage
         const riskProfileData = JSON.parse(localStorage.getItem('riskProfileData'));
 
         const response = await fetch('http://localhost:4000/api/riskprofiles', {
@@ -130,33 +90,33 @@ const Inputpart2 = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            ...profileData,
             title: riskProfileData.title,
             description: riskProfileData.description,
-            initialRiskPerTrade,
-            growthThreshold,
-            increaseOnWin,
-            decreaseOnLoss,
-            SLallowedperday,
-            reset,
-            maxRisk,
-            minRisk,
-            payoutPercentage,
-            minRiskRewardRatio, // Send new field
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Failed to create the risk profile');
         }
 
-        // Clear local storage if necessary
         localStorage.removeItem('riskProfileData');
       }
+
+      // Ensure only one profile is default
+      if (isDefault) {
+        await fetch('http://localhost:4000/api/riskprofiles/reset-default', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }), // Pass current profile ID
+        });
+      }
+
+      console.log("set as default") // Redirect after save
     } catch (error) {
-      console.error('Error updating risk profile:', error);
+      console.error('Error saving risk profile:', error);
     }
   };
-
   
 
 
@@ -245,7 +205,14 @@ const Inputpart2 = () => {
                 onChange={(e) => setDecreaseOnLoss(e.target.value)}
               />
             </div>
-            
+            <label>
+              <input
+                type="checkbox"
+                checked={isDefault}
+                onChange={(e) => setIsDefault(e.target.checked)}
+              />
+              <div className="label">Set as Default</div>
+            </label>
           </div>
 
           {/* Second Row of Inputs */}
@@ -326,6 +293,10 @@ const Inputpart2 = () => {
               />
             </div>
             <div className="button-group">
+              {/* Checkbox for setting default */}
+          <div className="form-group">
+          
+          </div>
           <button onClick={handleSave} className="form-button">Save</button>
           
         </div>

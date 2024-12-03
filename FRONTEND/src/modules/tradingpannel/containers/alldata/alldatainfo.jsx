@@ -335,8 +335,8 @@ const TradeComponent = () => {
   };
   const confirmCancel =async ()=>{
     console.log("selected",selectedOrder)
-    let data ={symbol:selectedOrder?.symbol,orderLinkId:selectedOrder?.orderLinkId,category:'linear',orderId:selectedOrder?.orderId,orderFilter:selectedOrder?.orderFilter}
-    let response = await fetch('http://localhost:4000/api/order/cancel-order', {
+    let data = `symbol=${selectedOrder?.symbol}&orderLinkId=${selectedOrder?.orderLinkId}&category=linear&orderId=${selectedOrder?.orderId}}`;
+ let response = await fetch('http://localhost:4000/api/order/cancel-order', {
       method: 'POST', // HTTP method
       headers: {
         'Content-Type': 'application/json', // Set content type to JSON
@@ -448,18 +448,19 @@ const TradeComponent = () => {
           {tradeHistoryData.map((history, index) => (
             <div key={index} className="data-row1">
               <span>{history.symbol}</span>
-              <span>{history.orderType}</span>
-              <span>{history.leverage}</span>
-              <span>{history.side}</span>
-              <span>{history.closedPnl}</span>
-              <span>{history.avgEntryPrice}</span>
-              <span>{history.qty}</span>
-              <span>{history.orderPrice}</span>
-              <span>{history.avgExitPrice}</span>
-              <span>{history.execType}</span>
-              <span>{history.closedSize}</span>
-              <span>{new Date(parseInt(history.updatedTime)).toLocaleString()}</span>
-            </div>
+              
+<span>{history.orderType}</span>
+<span>{history.leverage}</span>
+<span>{history.side === 'buy' ? 'Short' : 'Long'}</span> {/* Change buy/sell to Long/Short */}
+<span>{parseFloat(history.closedPnl).toFixed(2)}</span> {/* Ensure it's a number and fix to 2 decimal places */}
+<span>{parseFloat(history.avgEntryPrice).toFixed(2)}</span> {/* Ensure it's a number and fix to 2 decimal places */}
+<span>{parseFloat(history.qty).toFixed(2)}</span> {/* Ensure it's a number and fix to 2 decimal places */}
+<span>{parseFloat(history.orderPrice).toFixed(2)}</span> {/* Ensure it's a number and fix to 2 decimal places */}
+<span>{parseFloat(history.avgExitPrice).toFixed(2)}</span> {/* Ensure it's a number and fix to 2 decimal places */}
+<span>{history.execType}</span>
+<span>{history.closedSize}</span>
+<span>{new Date(parseInt(history.updatedTime)).toLocaleString()}</span>
+                          </div>
           ))}
         </div>
       )}
