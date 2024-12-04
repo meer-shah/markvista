@@ -100,13 +100,17 @@ exports.deleteGoal = async (req, res) => {
       return res.status(404).json({ message: 'No active Risk Profile found.' });
     }
 
+    // Find the goal in the activeProfile's goals array
     const goal = activeProfile.goals.id(goalId);
 
     if (!goal) {
       return res.status(404).json({ message: 'Goal not found.' });
     }
 
-    goal.remove();
+    // Use the pull method to remove the goal from the goals array
+    activeProfile.goals.pull(goalId);
+
+    // Save the updated RiskProfile document
     await activeProfile.save();
 
     res.status(200).json({ message: 'Goal deleted successfully.' });
@@ -115,3 +119,4 @@ exports.deleteGoal = async (req, res) => {
     res.status(500).json({ message: 'Internal server error.' });
   }
 };
+

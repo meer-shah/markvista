@@ -362,6 +362,7 @@ if (SLallowedPerDay <= 0) {
         }
     };
 
+    
 
         
             // Decide which order function to use
@@ -427,6 +428,8 @@ if (SLallowedPerDay <= 0) {
                     const usdtBalance = getUsdtBalance(accountBalanceResponse);
                     res.send(usdtBalance)
                 }
+
+               
                 
                 const getOrderList = async () => {
                     const endpoint = "/v5/order/realtime";  // API endpoint for fetching orders
@@ -904,8 +907,16 @@ if (SLallowedPerDay <= 0) {
                 // runTestCase();
 
                 // Export all functions for use in other parts of the application
+
+             
+                
+                
+                
+                
+                
                 module.exports = {
                     placeOrder,
+                  
                     placeOrderWithRiskProfile, // Included this one for placing orders with risk profile
                     getOrderListf, // Fetch pending orders
                     cancelOrder,

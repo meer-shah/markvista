@@ -14,6 +14,7 @@ const {
   getSingleCoinBalance,
   gettransactionlog,
   showusdtbalance,
+ 
 } = require('../controllers/order');
 
 const router = express.Router();
@@ -32,6 +33,7 @@ router.post('/switch-margin-mode', switchMarginMode); // Switch margin mode
 
 // Trade History and Risk Management Routes
 router.get('/closed-pnl', getClosedPnlf); // Get closed PnL for trade history
+
 
 router.get('/showusdtbalance', showusdtbalance);
 // Account Management Routes
