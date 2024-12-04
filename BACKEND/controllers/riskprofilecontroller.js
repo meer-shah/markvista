@@ -210,7 +210,14 @@ const getSingleRiskProfile = async (req, res) => {
 };
 
 // Create a new risk profile
+
+
 const createRiskProfile = async (req, res) => {
+  // Helper function to sanitize values, setting defaults if undefined or empty
+  const sanitize = (value, defaultValue) => {
+    return value === "" || value === undefined ? defaultValue : value;
+  };
+
   const {
     title,
     description,
@@ -222,53 +229,91 @@ const createRiskProfile = async (req, res) => {
     minRisk,
     reset,
     growthThreshold,
-    payoutPercentage
+    payoutPercentage,
+    minRiskRewardRatio,
+    isDefault,
   } = req.body;
 
   try {
+    // If the profile is marked as default, turn off 'default' for all other profiles
+    if (isDefault) {
+      // Set all other profiles' `default` to false
+      await RiskProfile.updateMany({}, { default: false });
+    }
+
+    // Create the new risk profile with sanitized data
     const newRiskProfile = await RiskProfile.create({
       title,
       description,
-      SLallowedperday,
-      initialRiskPerTrade,
-      increaseOnWin,
-      decreaseOnLoss,
-      maxRisk,
-      minRisk,
-      reset,
-      growthThreshold,
-      payoutPercentage,
-      minRiskRewardRatio,
+      SLallowedperday: sanitize(SLallowedperday, 100),
+      initialRiskPerTrade: sanitize(initialRiskPerTrade, 0),
+      increaseOnWin: sanitize(increaseOnWin, 0),
+      decreaseOnLoss: sanitize(decreaseOnLoss, 0),
+      maxRisk: sanitize(maxRisk, 100),
+      minRisk: sanitize(minRisk, 0),
+      reset: sanitize(reset, 100000),
+      growthThreshold: sanitize(growthThreshold, 0),
+      payoutPercentage: sanitize(payoutPercentage, 0),
+      minRiskRewardRatio: sanitize(minRiskRewardRatio, 1),
+      default: sanitize(isDefault, false),
     });
+
     res.status(201).json({ message: 'New risk profile created', data: newRiskProfile });
   } catch (error) {
+    console.error("Error creating risk profile:", error);
     res.status(500).json({ message: 'Error creating risk profile', error: error.message });
   }
 };
+
 
 // Delete a risk profile
 const deleteRiskProfile = async (req, res) => {
   const { id } = req.params;
 
+  // Validate the ID format
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid ID format' });
   }
 
   try {
     const riskProfile = await RiskProfile.findById(id);
+
+    // If the profile is the default, prevent deletion
     if (riskProfile.default) {
       return res.status(400).json({ message: 'Cannot delete the default risk profile' });
     }
 
+    // If the profile to be deleted is active (ison: true)
+    if (riskProfile.ison) {
+      // Find the default risk profile
+      const defaultProfile = await RiskProfile.findOne({ default: true });
+
+      // If there is a default profile, deactivate all active profiles
+      if (defaultProfile) {
+        // Deactivate all profiles that have ison: true
+        await RiskProfile.updateMany({ ison: true }, { ison: false });
+
+        // Set the default profile as active
+        defaultProfile.ison = true;
+        await defaultProfile.save();  // Save the updated default profile
+      }
+    }
+
+    // Proceed to delete the risk profile
     const deletedRiskProfile = await RiskProfile.findByIdAndDelete(id);
     if (!deletedRiskProfile) {
       return res.status(404).json({ message: 'Risk profile not found' });
     }
-    res.status(200).json({ message: 'Risk profile deleted', data: deletedRiskProfile });
+
+    // Return success message
+    res.status(200).json({ message: 'Risk profile deleted successfully', data: deletedRiskProfile });
   } catch (error) {
+    // Handle errors
+    console.error(error);
     res.status(500).json({ message: 'Error deleting risk profile', error: error.message });
   }
 };
+
 
 // Update a risk profile
 const updateRiskProfile = async (req, res) => {
@@ -315,106 +360,88 @@ const activateprofile = async (req, res) => {
     return res.status(400).json({ message: 'Invalid ID format' });
   }
 
-  // Ensure the body contains 'ison'
   const { ison } = req.body;
 
-  if (typeof ison !== 'boolean') {
-    return res.status(400).json({ message: 'Invalid ison value; must be a boolean' });
+  // Ensure `ison` is a boolean and reject attempts to set `ison: false`
+  if (ison !== true) {
+    return res.status(400).json({
+      message: 'You can only activate a risk profile. Deactivation is not allowed directly.',
+    });
   }
 
   try {
-    // If deactivating the default profile (ison: false)
-    if (!ison) {
-      const profileToDeactivate = await RiskProfile.findById(id);
-      
-      // If the profile to deactivate is the default profile
-      if (profileToDeactivate.default) {
-        // Check if any other profile is active
-        const activeProfile = await RiskProfile.findOne({ ison: true });
+    // Deactivate all other profiles
+    await RiskProfile.updateMany({ ison: true }, { ison: false });
 
-        if (!activeProfile) {
-          // Prevent deactivating the default if no other profile is active
-          return res.status(400).json({ message: 'Cannot deactivate the default profile unless another profile is active.' });
-        }
-
-        // Reset the default profile and assign a new one
-        const otherProfiles = await RiskProfile.find({ _id: { $ne: id } });
-
-        if (otherProfiles.length > 0) {
-          const newDefaultProfile = otherProfiles[0];  // Pick the first non-default profile
-          newDefaultProfile.default = true;
-          await newDefaultProfile.save();
-        } else {
-          // If no profiles are available, set default profile to itself
-          profileToDeactivate.default = true;
-          await profileToDeactivate.save();
-        }
-      }
-    }
-
-    // If activating a profile (ison: true)
-    if (ison) {
-      // Deactivate all other profiles by setting 'ison' to false
-      await RiskProfile.updateMany({ ison: true }, { ison: false });
-
-      // Ensure that there is always one default risk profile
-      const existingDefault = await RiskProfile.findOne({ default: true });
-      if (!existingDefault) {
-        const firstRiskProfile = await RiskProfile.findOne();
-        if (firstRiskProfile) {
-          firstRiskProfile.default = true;
-          await firstRiskProfile.save();
-        }
-      }
-
-      // Update the selected profile to set its 'ison' to true
-      const updatedRiskProfile = await RiskProfile.findByIdAndUpdate(id, { ison }, { new: true });
-
-      if (!updatedRiskProfile) {
-        return res.status(404).json({ message: 'Risk profile not found' });
-      }
-
-      return res.status(200).json({ message: 'Risk profile activated', data: updatedRiskProfile });
-    }
-
-    // Handle turning off the profile (ison: false)
-    const updatedRiskProfile = await RiskProfile.findByIdAndUpdate(id, { ison }, { new: true });
+    // Activate the selected profile
+    const updatedRiskProfile = await RiskProfile.findByIdAndUpdate(
+      id,
+      { ison: true },
+      { new: true }
+    );
 
     if (!updatedRiskProfile) {
       return res.status(404).json({ message: 'Risk profile not found' });
     }
 
-    return res.status(200).json({ message: 'Risk profile deactivated', data: updatedRiskProfile });
+    res.status(200).json({
+      message: 'Risk profile activated successfully',
+      data: updatedRiskProfile,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error activating/deactivating risk profile', error: error.message });
+    res.status(500).json({
+      message: 'Error activating risk profile',
+      error: error.message,
+    });
   }
 };
 
 // Ensure that there is always one default profile
 const resetdeault = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.body; // The ID of the profile to be set as default
 
   try {
-    // Ensure that there is at least one default risk profile
-    const existingDefault = await RiskProfile.findOne({ default: true });
-    if (!existingDefault) {
-      // If no default exists, set the first risk profile as default
-      const firstRiskProfile = await RiskProfile.findOne();
-      if (firstRiskProfile) {
-        firstRiskProfile.default = true;
-        await firstRiskProfile.save();
-      }
+    // Validate the incoming ID
+    if (!id) {
+      return res.status(400).json({ error: 'Profile ID is required.' });
     }
 
-    // Set the selected profile as default and reset others
-    await RiskProfile.updateMany({ _id: { $ne: id } }, { default: false });
-    await RiskProfile.findByIdAndUpdate(id, { default: true });
+    // Check if there's already a default profile set
+    const existingDefault = await RiskProfile.findOne({ default: true });
 
-    res.status(200).send('Default risk profile updated successfully.');
+    // If there is no default profile, allow the first profile to remain as default
+    if (!existingDefault) {
+      const firstProfile = await RiskProfile.findOne();
+      if (firstProfile) {
+        await RiskProfile.updateOne({ _id: firstProfile._id }, { default: true });
+      }
+    } else {
+      // If a default profile exists, set all others' `default` to false
+      await RiskProfile.updateMany({ _id: { $ne: id } }, { default: false });
+    }
+
+    // Set the selected profile as the default
+    const updatedProfile = await RiskProfile.findByIdAndUpdate(
+      id,
+      { default: true },
+      { new: true }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ error: 'Profile not found.' });
+    }
+
+    res.status(200).json({
+      message: 'Default risk profile updated successfully.',
+      updatedProfile,
+    });
   } catch (error) {
+    console.error('Error resetting default profile:', error);
     res.status(500).json({ error: 'Failed to reset default profile.' });
   }
 };
+
+
 
 module.exports = {
   getAllRiskProfiles,
@@ -425,4 +452,5 @@ module.exports = {
   activateprofile,
   getActiveRiskProfile,
   resetdeault
+
 };

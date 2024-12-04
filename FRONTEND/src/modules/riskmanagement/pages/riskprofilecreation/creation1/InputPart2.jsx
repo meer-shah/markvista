@@ -1,14 +1,152 @@
 
 
+// import React, { useState, useEffect } from 'react';
+// import './InputPart2.css';
+// import { useNavigate, useParams } from 'react-router-dom';
+// import Main from '../../visualizeandbreakdownpage/main'
+
+// const Inputpart2 = () => {
+//   const navigate = useNavigate();
+//   const { id } = useParams();
+  
+
+//   // State for input fields
+//   const [initialRiskPerTrade, setInitialRiskPerTrade] = useState('');
+//   const [growthThreshold, setGrowthThreshold] = useState('');
+//   const [increaseOnWin, setIncreaseOnWin] = useState('');
+//   const [decreaseOnLoss, setDecreaseOnLoss] = useState('');
+//   const [SLallowedperday, setSLallowedperday] = useState('');
+//   const [reset, setReset] = useState('');
+//   const [maxRisk, setMaxRisk] = useState('');
+//   const [minRisk, setMinRisk] = useState('');
+//   const [payoutPercentage, setPayoutPercentage] = useState('');
+//   const [minRiskRewardRatio, setMinRiskRewardRatio] = useState('');
+//   const [default, setdefault] = useState(false); // State for default checkbox
+
+//   useEffect(() => {
+//     // Fetch the existing risk profile data for the given ID
+//     if (id) {
+//       const fetchRiskProfile = async () => {
+//         try {
+//           const response = await fetch(`http://localhost:4000/api/riskprofiles/${id}`);
+//           if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//           }
+//           const data = await response.json();
+//           setInitialRiskPerTrade(data.initialRiskPerTrade || '');
+//           setGrowthThreshold(data.growthThreshold || '');
+//           setIncreaseOnWin(data.increaseOnWin || '');
+//           setDecreaseOnLoss(data.decreaseOnLoss || '');
+//           setSLallowedperday(data.SLallowedperday || '');
+//           setReset(data.reset || '');
+//           setMaxRisk(data.maxRisk || '');
+//           setMinRisk(data.minRisk || '');
+//           setPayoutPercentage(data.payoutPercentage || '');
+//           setMinRiskRewardRatio(data.minRiskRewardRatio || '');
+//           setIsDefault(data.default || false); // Pre-fill the checkbox
+//         } catch (error) {
+//           console.error('Error fetching risk profile:', error);
+//         }
+//       };
+
+//       fetchRiskProfile();
+//     }
+//   }, [id]);
+//   const applyDefaults = () => {
+//     return {
+//       initialRiskPerTrade: initialRiskPerTrade || 0,
+//       growthThreshold: growthThreshold || 0,
+//       increaseOnWin: increaseOnWin || 0,
+//       decreaseOnLoss: decreaseOnLoss || 0,
+//       SLallowedperday: SLallowedperday || 100,
+//       reset: reset || 100000,
+//       maxRisk: maxRisk || 100,
+//       minRisk: minRisk || 0,
+//       payoutPercentage: payoutPercentage || 0,
+//       minRiskRewardRatio: minRiskRewardRatio || 1,
+//       default: default || false, // Use the correct state
+//     };
+//   };
+  
+//   const validateInput = () => {
+//     // Conversion and validation logic for the new field
+//     const numMinRiskRewardRatio = parseFloat(minRiskRewardRatio);
+
+//     if (isNaN(numMinRiskRewardRatio) || numMinRiskRewardRatio <= 0) {
+//       alert('Minimum Risk to Reward Ratio should be a positive number');
+//       return false;
+//     }
+
+//     // Add other validations here...
+
+//     return true;
+//   };
+
+
+
+//   const handleSave = async () => {
+//     if (!validateInput()) return;
+  
+//     const profileData = applyDefaults();
+  
+//     try {
+//       if (id) {
+//         // Update existing risk profile
+//         const response = await fetch(`http://localhost:4000/api/riskprofiles/${id}`, {
+//           method: 'PATCH',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(profileData),
+//         });
+  
+//         if (!response.ok) {
+//           throw new Error('Failed to update the risk profile');
+//         }
+//       } else {
+//         // Create a new risk profile
+//         const riskProfileData = JSON.parse(localStorage.getItem('riskProfileData'));
+//         const response = await fetch('http://localhost:4000/api/riskprofiles', {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({
+//             ...profileData,
+//             title: riskProfileData.title,
+//             description: riskProfileData.description,
+//           }),
+//         });
+  
+//         if (!response.ok) {
+//           throw new Error('Failed to create the risk profile');
+//         }
+  
+//         localStorage.removeItem('riskProfileData');
+//       }
+  
+//       // Ensure only one profile is default
+//       if (profileData.isDefault) {
+//         await fetch('http://localhost:4000/api/riskprofiles/reset-default', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ id }),
+//         });
+//       }
+  
+//       console.log('Risk profile saved successfully');
+//     } catch (error) {
+//       console.error('Error saving risk profile:', error);
+//     }
+//   };
+  
 import React, { useState, useEffect } from 'react';
 import './InputPart2.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import Main from '../../visualizeandbreakdownpage/main'
 
 const Inputpart2 = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  
 
   // State for input fields
   const [initialRiskPerTrade, setInitialRiskPerTrade] = useState('');
@@ -21,7 +159,7 @@ const Inputpart2 = () => {
   const [minRisk, setMinRisk] = useState('');
   const [payoutPercentage, setPayoutPercentage] = useState('');
   const [minRiskRewardRatio, setMinRiskRewardRatio] = useState('');
-  const [isDefault, setIsDefault] = useState(false); // State for default checkbox
+  const [isDefault, setIsDefault] = useState(false); // Updated state name
 
   useEffect(() => {
     // Fetch the existing risk profile data for the given ID
@@ -43,7 +181,7 @@ const Inputpart2 = () => {
           setMinRisk(data.minRisk || '');
           setPayoutPercentage(data.payoutPercentage || '');
           setMinRiskRewardRatio(data.minRiskRewardRatio || '');
-          setIsDefault(data.default || false); // Pre-fill the checkbox
+          setIsDefault(data.default || false);
         } catch (error) {
           console.error('Error fetching risk profile:', error);
         }
@@ -53,73 +191,156 @@ const Inputpart2 = () => {
     }
   }, [id]);
 
-  const handleSave = async () => {
-    const profileData = {
-      initialRiskPerTrade,
-      growthThreshold,
-      increaseOnWin,
-      decreaseOnLoss,
-      SLallowedperday,
-      reset,
-      maxRisk,
-      minRisk,
-      payoutPercentage,
-      minRiskRewardRatio,
-      default: isDefault, // Include the default field
-    };
+  const applyDefaults = () => ({
+    initialRiskPerTrade: initialRiskPerTrade || 0,
+    growthThreshold: growthThreshold || 0,
+    increaseOnWin: increaseOnWin || 0,
+    decreaseOnLoss: decreaseOnLoss || 0,
+    SLallowedperday: SLallowedperday || 100,
+    reset: reset || 100000,
+    maxRisk: maxRisk || 100,
+    minRisk: minRisk || 0,
+    payoutPercentage: payoutPercentage || 0,
+    minRiskRewardRatio: minRiskRewardRatio || 1,
+    isDefault: isDefault || false,
+  });
 
+  const validateInput = () => {
+    const numMinRiskRewardRatio = parseFloat(minRiskRewardRatio);
+
+    if (isNaN(numMinRiskRewardRatio) || numMinRiskRewardRatio <= 0) {
+      alert('Minimum Risk to Reward Ratio should be a positive number');
+      return false;
+    }
+
+    return true;
+  };
+
+  // const handleSave = async () => {
+  //   if (!validateInput()) return;
+
+  //   const profileData = applyDefaults();
+
+  //   try {
+  //     if (id) {
+  //       // Update existing risk profile
+  //       const response = await fetch(`http://localhost:4000/api/riskprofiles/${id}`, {
+  //         method: 'PATCH',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify(profileData),
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error('Failed to update the risk profile');
+  //       }
+  //     } else {
+  //       // Create a new risk profile
+  //       const riskProfileData = JSON.parse(localStorage.getItem('riskProfileData'));
+  //       const response = await fetch('http://localhost:4000/api/riskprofiles', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           ...profileData,
+  //           title: riskProfileData.title,
+  //           description: riskProfileData.description,
+  //         }),
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error('Failed to create the risk profile');
+  //       }
+
+  //       localStorage.removeItem('riskProfileData');
+  //     }
+
+  //     // Ensure only one profile is default
+  //     if (profileData.isDefault) {
+  //       await fetch('http://localhost:4000/api/riskprofiles/reset-default', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ id }),
+  //       });
+  //     }
+
+  //     console.log('Risk profile saved successfully');
+  //   } catch (error) {
+  //     console.error('Error saving risk profile:', error);
+  //   }
+  // };
+
+  const handleSave = async () => {
+    if (!validateInput()) return;
+  
     try {
+      // Check if this is the first profile
+      const response = await fetch('http://localhost:4000/api/riskprofiles');
+      if (!response.ok) {
+        throw new Error('Failed to fetch existing profiles');
+      }
+      const existingProfiles = await response.json();
+  
+      const isFirstProfile = existingProfiles.length === 0;
+  
+      const profileData = {
+        ...applyDefaults(),
+        isDefault: isFirstProfile || isDefault, // Automatically set default for the first profile
+        ison: isFirstProfile || isDefault, // Automatically set active for the first profile
+      };
+  
       if (id) {
-        const response = await fetch(`http://localhost:4000/api/riskprofiles/${id}`, {
+        // Update existing risk profile
+        const updateResponse = await fetch(`http://localhost:4000/api/riskprofiles/${id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(profileData),
         });
-
-        if (!response.ok) {
+  
+        if (!updateResponse.ok) {
           throw new Error('Failed to update the risk profile');
         }
       } else {
+        // Create a new risk profile
         const riskProfileData = JSON.parse(localStorage.getItem('riskProfileData'));
-
-        const response = await fetch('http://localhost:4000/api/riskprofiles', {
+        const createResponse = await fetch('http://localhost:4000/api/riskprofiles', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             ...profileData,
-            title: riskProfileData.title,
-            description: riskProfileData.description,
+            title: riskProfileData?.title || 'Default Title',
+            description: riskProfileData?.description || 'Default Description',
           }),
         });
-
-        if (!response.ok) {
+  
+        if (!createResponse.ok) {
           throw new Error('Failed to create the risk profile');
         }
-
+  
         localStorage.removeItem('riskProfileData');
       }
-
+  
       // Ensure only one profile is default
-      if (isDefault) {
+      if (profileData.isDefault && !isFirstProfile) {
         await fetch('http://localhost:4000/api/riskprofiles/reset-default', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id }), // Pass current profile ID
+          body: JSON.stringify({ id }),
         });
       }
-
-      console.log("set as default") // Redirect after save
+  
+      console.log('Risk profile saved successfully');
     } catch (error) {
       console.error('Error saving risk profile:', error);
     }
   };
   
-
-
   return (
     <div className="app__wrapper">
       <div className="form-container">
