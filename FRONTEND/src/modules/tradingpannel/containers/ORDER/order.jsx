@@ -248,6 +248,8 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
 
 <div
 style={{
+    
+    fontSize:'34px',
     display: 'flex',          // Use flexbox for centering
     justifyContent: 'center', // Center horizontally
     alignItems: 'center',     // Center vertically

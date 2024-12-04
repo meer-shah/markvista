@@ -4,7 +4,8 @@
   padding: 20px;
   background-color: var(--color-section);
   border-radius: 8px;
-  padding-bottom: 3%;
+  
+  padding-bottom: 6%;
   flex-wrap: wrap; /* Allows items to wrap on smaller screens */
   
 }
@@ -12,6 +13,7 @@
 .section {
   width: 48%;
   padding: 0;
+  
 }
 
 /* Ensuring the text size and layout adapts to smaller screens */
