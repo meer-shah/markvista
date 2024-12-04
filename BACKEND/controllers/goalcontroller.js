@@ -2,6 +2,7 @@
 const RiskProfile = require('../models/riskprofilemodal');
 
 // CREATE: Add a new goal to a risk profile
+// CREATE: Add a new goal to a risk profile
 exports.addGoal = async (req, res) => {
   const { goalType, goalAmount } = req.body;
 
@@ -16,6 +17,14 @@ exports.addGoal = async (req, res) => {
       return res.status(404).json({ message: 'No active Risk Profile found.' });
     }
 
+    // Check if the active profile already has a goal
+    if (activeProfile.goals.length > 0) {
+      return res.status(400).json({ 
+        message: 'Only one goal is allowed per profile. Please update or delete the existing goal before adding a new one.' 
+      });
+    }
+
+    // Add the new goal
     activeProfile.goals.push({ goalType, goalAmount });
     await activeProfile.save();
 
@@ -25,6 +34,7 @@ exports.addGoal = async (req, res) => {
     res.status(500).json({ message: 'Internal server error.' });
   }
 };
+
 
 // READ: Get all goals for a risk profile
 exports.getGoals = async (req, res) => {

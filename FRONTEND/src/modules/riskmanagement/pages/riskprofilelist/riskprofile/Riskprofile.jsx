@@ -66,6 +66,7 @@ const Riskprofile = () => {
     }
   };
   
+ 
   
 
   if (loading) {
