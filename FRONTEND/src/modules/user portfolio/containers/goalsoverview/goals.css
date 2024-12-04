@@ -66,6 +66,7 @@
     flex-direction: column;
     gap: 10px; /* Further reduce gap between buttons */
     padding: 5px;
+   
   }
 
   .no-goals-message p {

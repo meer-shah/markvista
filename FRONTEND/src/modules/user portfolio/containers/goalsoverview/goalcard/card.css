@@ -8,6 +8,7 @@
     text-align: center;
     background-color: var(--color-section);
     font-family: var(--basic-font-family);
+    margin-bottom: 40px;
   }
   
   .heading {

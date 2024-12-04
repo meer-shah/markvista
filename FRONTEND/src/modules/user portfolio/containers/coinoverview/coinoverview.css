@@ -59,7 +59,7 @@ p {
   text-align: left;
   font-family: var(--basic-font-family);
   font-size: 14px;
-  width: 150px;
+  width: 250px;
 }
 
 .table-body tr:nth-child(even) {
@@ -99,7 +99,8 @@ p {
   }
 
   .table-body td {
-    font-size: 12px; /* Reduce font size for table data */
+    font-size: 12px; 
+    /* Reduce font size for table data */
   }
 }
 
@@ -121,7 +122,7 @@ p {
 
   .table-body td {
     font-size: 11px; /* Further reduce font size for table data */
-    width: auto; /* Adjust table cell width */
+    width: 150px; /* Adjust table cell width */
   }
 
   .line-container {
