@@ -244,19 +244,43 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
 
   return (
     <div className='main'>
-      <div className='riskprofileactive'>
-        <div>
-          {riskProfileName}
-        </div>
+      
 
-        
-      </div>
-
-
+<div
+style={{
+    display: 'flex',          // Use flexbox for centering
+    justifyContent: 'center', // Center horizontally
+    alignItems: 'center',     // Center vertically
+    marginTop: '0',           // Set upper margin to 0
+    height: '100%',           // Ensure it fills the parent container (optional)
+  }} className="p__heading ">{symbol}</div>
 
       <div className="crypto-leverage-container">
         <div className="leverage-section">
+
+        <div className="position-section">
+        <div className='riskprofileactive'>
+        <div>
+  <div
+    style={{
+      color: 'var(--color-detailing)', // Applying the desired color
+      marginBottom: '7px',
+      
+      fontSize:'22px'           // Adding some space below the name
+    }}
+  >
+    {riskProfileName}
+  </div>
+  <div>
+    Risk Profile is Active
+  </div>
+</div>
+
+
+        
+      </div>
           
+        </div>
           <div className="leverage-item">
           <label htmlFor="leverageAmount">Leverage Amount:</label>
           <input
@@ -268,22 +292,10 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
               onChange={(e) => handleLeverageAmountChange(e.target.value)}
             />
           </div>
+         
         </div>
-{/* 
-        <div className="position-section">
-          <span
-            className={`position-text ${positionType === 'open' ? 'active' : ''}`}
-            onClick={() => handlePositionTypeChange('open')}
-          >
-            Open
-          </span>
-          <span
-            className={`position-text ${positionType === 'close' ? 'active' : ''}`}
-            onClick={() => handlePositionTypeChange('close')}
-          >
-            Close
-          </span>
-        </div> */}
+
+        
 
         {positionType && (
           <div className="order-type-section">

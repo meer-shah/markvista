@@ -1,14 +1,84 @@
-import React, { useEffect, useRef, useState, memo } from 'react';
 
-const TradingViewWidget = ({ initialSymbol = 'BTCUSDT' }) => {
-    const containerRef = useRef(null);
-    const [symbol, setSymbol] = useState(initialSymbol);
-    const [search, setSearch] = useState('');
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [filteredSymbols, setFilteredSymbols] = useState([]);
+    // import React, { useEffect, useRef, useState, memo } from 'react';
 
-    const symbols = [
-       "10000000AIDOGEUSDT",
+    // const TradingViewWidget = ({symbol , setSymbol}) => {
+    //     const containerRef = useRef(null);
+    //     // const [symbol, setSymbol] = useState('BTCUSDT');
+    
+    //     useEffect(() => {
+    //         // Load the TradingView script
+    //         const script = document.createElement('script');
+    //         script.src = 'https://s3.tradingview.com/tv.js';
+    //         script.type = 'text/javascript';
+    //         script.async = true;
+    //         script.onload = () => {
+    //             if (window.TradingView) {
+    //                 loadChart(symbol);
+    //             }
+    //         };
+    //         document.head.appendChild(script);
+    
+    //         // Cleanup script if the component unmounts
+    //         return () => {
+    //             document.head.removeChild(script);
+    //         };
+    //     }, [symbol]);
+    
+    //     const loadChart = (symbol) => {
+    //         if (containerRef.current && window.TradingView) {
+    //             new window.TradingView.widget({
+    //                 autosize: true,
+    //                 symbol: `BYBIT:${symbol}.P`,
+    //                 interval: '5',
+    //                 timezone: 'Asia/Karachi',
+    //                 style: '1',
+    //                 theme: 'dark',
+    //                 locale: 'en',
+    //                 withdateranges: true,
+    //                 hide_side_toolbar: false,
+    //                 allow_symbol_change: false, // Prevents user from searching/changing the symbol
+    //                 details: true,
+    //                 calendar: false,
+    //                 toolbar_bg: '#ffffff',
+    //                 container_id: containerRef.current.id,
+    //                 support_host: "https://www.tradingview.com"
+    //             });
+    //         }
+    //     };
+    
+    //     const handleSymbolChange = (event) => {
+    //         setSymbol(event.target.value);
+    //     };
+    
+    //     return (
+    //         <div>
+    //             <select onChange={handleSymbolChange} value={symbol}>
+    //                 <option value="BTCUSDT">BTCUSDT</option>
+    //                 <option value="ETHUSDT">ETHUSDT</option>
+    //             </select>
+    //             <br />
+    //             <div
+    //                 className="tradingview-widget-container"
+    //                 id="tvchart"
+    //                 ref={containerRef}
+    //                 style={{ height: '86vh', width: '100%' }} // Changed width to 100vw
+    //             ></div>
+    //         </div>
+    //     );
+    // };
+    
+    // export default memo(TradingViewWidget);
+    import React, { useEffect, useRef, useState, memo } from 'react';
+
+const TradingViewWidget = ({ symbol, setSymbol }) => {
+  const containerRef = useRef(null);
+  const [search, setSearch] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [filteredSymbols, setFilteredSymbols] = useState([]);
+
+  // Filtered symbols: Only those ending with "USDT"
+  const symbols =  [
+    "10000000AIDOGEUSDT",
     "1000000BABYDOGEUSDT",
     "1000000CHEEMSUSDT",
     "1000000MOGUSDT",
@@ -506,130 +576,144 @@ const TradingViewWidget = ({ initialSymbol = 'BTCUSDT' }) => {
     "ZRCUSDT",
     "ZROUSDT",
     "ZRXUSDT"
-   ];
+  ].filter((sym) => sym.endsWith("USDT"));
 
-    useEffect(() => {
-        setFilteredSymbols(symbols); // Initialize with all symbols
-    }, []);
+  useEffect(() => {
+    setFilteredSymbols(symbols); // Initialize with all symbols
+  }, [symbols]);
 
-    useEffect(() => {
-        // Filter symbols dynamically based on search input
-        const results = symbols.filter((s) =>
-            s.toLowerCase().includes(search.toLowerCase())
-        );
-        setFilteredSymbols(results);
-    }, [search]);
-
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://s3.tradingview.com/tv.js';
-        script.type = 'text/javascript';
-        script.async = true;
-        script.onload = () => {
-            if (window.TradingView) {
-                loadChart(symbol);
-            }
-        };
-        document.head.appendChild(script);
-
-        return () => {
-            document.head.removeChild(script);
-        };
-    }, [symbol]);
-
-    const loadChart = (symbol) => {
-        if (containerRef.current && window.TradingView) {
-            new window.TradingView.widget({
-                autosize: true,
-                symbol: `BYBIT:${symbol}.P`,
-                interval: '5',
-                timezone: 'Asia/Karachi',
-                style: '1',
-                theme: 'dark',
-                locale: 'en',
-                withdateranges: true,
-                hide_side_toolbar: false,
-                allow_symbol_change: false,
-                details: true,
-                calendar: false,
-                toolbar_bg: '#ffffff',
-                container_id: containerRef.current.id,
-                support_host: "https://www.tradingview.com",
-            });
-        }
-    };
-
-    return (
-        <div>
-            <div
-                style={{
-                    position: 'relative',
-                    marginBottom: '10px',
-                    width: '100%',
-                }}
-            >
-                <input
-                    type="text"
-                    placeholder="Search or select symbol..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onFocus={() => setIsDropdownOpen(true)}
-                    onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)} // Delayed to allow click
-                    style={{
-                        padding: '8px',
-                        width: '100%',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
-                        color: 'var(--color-background)', 
-                    }}
-                />
-                {isDropdownOpen && filteredSymbols.length > 0 && (
-                    <ul
-                    style={{
-                        position: 'absolute',
-                        zIndex: 10,
-                        listStyle: 'none',
-                        margin: 0,
-                        padding: '10px',
-                        background: '#fff',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        maxHeight: '200px',
-                        overflowY: 'auto',
-                        width: '100%',
-                        fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
-                        color: 'var(--color-background)',            // This was already correct
-                    }}
-                    
-                    >
-                        {filteredSymbols.map((sym) => (
-                            <li
-                                key={sym}
-                                onMouseDown={() => {
-                                    setSymbol(sym);
-                                    setSearch(sym); // Set the selected symbol in the input
-                                    setIsDropdownOpen(false);
-                                }}
-                                style={{
-                                    padding: '5px',
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                {sym}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-            <div
-                className="tradingview-widget-container"
-                id="tvchart"
-                ref={containerRef}
-                style={{ height: '86vh', width: '100%' }}
-            ></div>
-        </div>
+  useEffect(() => {
+    // Filter symbols dynamically based on search input
+    const results = symbols.filter((s) =>
+      s.toLowerCase().includes(search.toLowerCase())
     );
+    setFilteredSymbols(results);
+  }, [search]);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://s3.tradingview.com/tv.js';
+    script.async = true;
+    script.onload = () => {
+      if (window.TradingView) {
+        loadChart(symbol);
+      } else {
+        console.error("TradingView library not available.");
+      }
+    };
+    script.onerror = (error) => {
+      console.error("Error loading TradingView script", error);
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [symbol]);
+
+  const loadChart = (symbol) => {
+    if (containerRef.current && window.TradingView) {
+      new window.TradingView.widget({
+        autosize: true,
+        symbol: `BYBIT:${symbol}.P`,
+        interval: '5',
+        timezone: 'Asia/Karachi',
+        style: '1',
+        theme: 'dark',
+        locale: 'en',
+        withdateranges: true,
+        hide_side_toolbar: false,
+        allow_symbol_change: false, // Prevents user from searching/changing the symbol
+        details: true,
+        calendar: false,
+        toolbar_bg: '#ffffff',
+        container_id: containerRef.current.id,
+        support_host: "https://www.tradingview.com",
+      });
+    } else {
+      console.error('TradingView container or window is not available.');
+    }
+  };
+
+  const handleSymbolSelect = (sym) => {
+    setSymbol(sym);
+    setSearch(sym);
+    setIsDropdownOpen(false);
+  };
+
+  const handleSymbolChange = (event) => {
+    setSymbol(event.target.value);
+  };
+
+  return (
+    <div>
+      <div
+        style={{
+          position: 'relative',
+          marginBottom: '10px',
+          width: '100%',
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Search or select symbol..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            handleSymbolChange(e);
+          }}
+          onFocus={() => setIsDropdownOpen(true)}
+          onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)} // Delayed to allow click
+          style={{
+            padding: '8px',
+            width: '100%',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
+            color: 'var(--color-background)',
+          }}
+        />
+        {isDropdownOpen && filteredSymbols.length > 0 && (
+          <ul
+            style={{
+              position: 'absolute',
+              zIndex: 10,
+              listStyle: 'none',
+              margin: 0,
+              padding: '10px',
+              background: '#fff',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              maxHeight: '200px',
+              overflowY: 'auto',
+              width: '100%',
+              fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
+              color: 'var(--color-background)', // This was already correct
+            }}
+          >
+            {filteredSymbols.map((sym) => (
+              <li
+                key={sym}
+                onMouseDown={() => handleSymbolSelect(sym)}
+                style={{
+                  padding: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                {sym}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div
+        className="tradingview-widget-container"
+        id="tvchart"
+        ref={containerRef}
+        style={{ height: '86vh', width: '100%' }}
+      ></div>
+    </div>
+  );
 };
 
 export default memo(TradingViewWidget);
