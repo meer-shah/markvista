@@ -316,6 +316,7 @@ const deleteRiskProfile = async (req, res) => {
 
 
 // Update a risk profile
+
 const updateRiskProfile = async (req, res) => {
   const { id } = req.params;
 
@@ -334,8 +335,7 @@ const updateRiskProfile = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error updating risk profile', error: error.message });
   }
-};
-
+}; 
 
 // Get active risk profiles
 const getActiveRiskProfile = async (req, res) => {

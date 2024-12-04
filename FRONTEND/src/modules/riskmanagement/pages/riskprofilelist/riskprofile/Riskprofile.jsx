@@ -104,6 +104,7 @@ const Riskprofile = () => {
             onDelete={handleDelete}
             isChecked={activeProfileId === riskProfile._id} // Pass checked state
           onToggle={() => handleToggle(riskProfile._id)}  // Pass toggle handler
+          defaultProfile={riskProfile.default}
           />
         ))}
       </div>
@@ -133,4 +134,4 @@ const Riskprofile = () => {
   );
 };
 
-export default Riskprofile;
+export default Riskprofile;   
