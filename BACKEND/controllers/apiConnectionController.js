@@ -2,9 +2,16 @@ const ApiConnection = require('../models/ApiConnection');
 
 // Controller to add API Key and Secret Key
 exports.addApiConnection = async (req, res) => {
-  const { apiKey, secretKey } = req.body;
+  let { apiKey, secretKey } = req.body;
 
   try {
+    // Sanitize inputs: Remove commas and other unnecessary symbols
+    const sanitizeInput = (input) =>
+      input.replace(/[^a-zA-Z0-9]/g, ''); // Allow only alphanumeric characters
+
+    apiKey = sanitizeInput(apiKey);
+    secretKey = sanitizeInput(secretKey);
+
     // Check if any record already exists
     const existingConnection = await ApiConnection.findOne();
     if (existingConnection) {
@@ -28,6 +35,7 @@ exports.addApiConnection = async (req, res) => {
     });
   }
 };
+
 
 // Controller to fetch API Key and Secret Key
 exports.getApiConnection = async (req, res) => {

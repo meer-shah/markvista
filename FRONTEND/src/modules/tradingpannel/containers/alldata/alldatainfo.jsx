@@ -316,10 +316,19 @@ const TradeComponent = () => {
         console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
+
       }
     };
 
     fetchData();
+    
+
+    
+    const intervalId = setInterval(fetchData, 3000);
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(intervalId);
+
   }, [selectedTab]);
 
   const openConfirmationModal = (order) => {
@@ -333,20 +342,37 @@ const TradeComponent = () => {
     setShowConfirmationModal(false);
     setSelectedOrder({})
   };
-  const confirmCancel =async ()=>{
-    console.log("selected",selectedOrder)
-    let data = `symbol=${selectedOrder?.symbol}&orderLinkId=${selectedOrder?.orderLinkId}&category=linear&orderId=${selectedOrder?.orderId}}`;
- let response = await fetch('http://localhost:4000/api/order/cancel-order', {
-      method: 'POST', // HTTP method
-      headers: {
-        'Content-Type': 'application/json', // Set content type to JSON
-      },
-      body: JSON.stringify(data), // Convert data to JSON string
+  const confirmCancel = async () => {
+    console.log("selected", selectedOrder);
+    
+    // Construct the data as an object, not as a query string
+    let data = {
+      category: 'linear',
+        symbol: selectedOrder?.symbol,
+        
+        
+        baseCoin: 'null',
+        settleCoin: 'null'
+       
+    };
+    console.log(selectedOrder?.symbol);
+
+    // Send the data as a JSON object in the request body
+    let response = await fetch('http://localhost:4000/api/order/cancel-order', {
+        method: 'POST', // HTTP method
+        headers: {
+            'Content-Type': 'application/json', // Set content type to JSON
+        },
+        body: JSON.stringify(data), // Convert data to JSON string
     });
+    
+    // Log the response from the server
     console.log(await response.json());
+    
     setShowConfirmationModal(false);
-    setSelectedOrder({})
-  }
+    setSelectedOrder({});
+};
+
   return (
     <div className="trade-container">
       <div className="tab-section">
@@ -370,9 +396,8 @@ const TradeComponent = () => {
         </span>
       </div>
 
-      {isLoading && <div className="loading">Loading...</div>}
-
-      {!isLoading && selectedTab === 'positions' && (
+      
+      {selectedTab === 'positions' && (
         <div className="positions-section">
           <div className="heading-row">
             <span>Symbol</span>
@@ -397,7 +422,7 @@ const TradeComponent = () => {
         </div>
       )}
 
-      {!isLoading && selectedTab === 'pendingOrders' && (
+      { selectedTab === 'pendingOrders' && (
         <div className="pending-orders-section">
           <div className="heading-row">
             <span>Symbol</span>
@@ -429,7 +454,7 @@ const TradeComponent = () => {
         </div>
       )}
 
-      {!isLoading && selectedTab === 'tradeHistory' && (
+      { selectedTab === 'tradeHistory' && (
         <div className="trade-history-section">
           <div className="heading-row1">
             <span>Symbol</span>

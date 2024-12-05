@@ -14,12 +14,12 @@
                 // const secret = "6i32BfhTK14YbE8OttN6c8uBQXqbhe7C6GYJ";  // Your secret key
                 // //demo account 
                 const url = 'https://api-demo.bybit.com';  // API base URL
-                // const apiKey = "Y1rRqFvBHiIS3YAlcB";  // Your API key
-                // const secret = "gB6SF4CKIixKPBtxEKSeA3J1jpYlDmQLwzkN";  // Your secret key
+                // const apiKey = "P2z29H15m5Ff6El89D";  // Your API key
+                // const secret = "Ppxawwfgsagvgtsjkm4K8QX2tft0TdaUB0Pl";  // Your secret key
                 // const { apiKey, secret } =  getApiKeysFromDB(); // Dynamically fetch keys from DB
-                let apiKey = null;
-                let secret = null;
-                const recvWindow = 50000000000;  // Maximum window for receiving the response (in ms)
+                let apiKey = null;  // Your API key
+                let secret = null ;  // Your secret key
+                const recvWindow = 50000000;  // Maximum window for receiving the response (in ms)
                 const timestamp = Date.now().toString();  // Current timestamp for signing requests
 
                 async function initializeApiKeys() {
@@ -37,8 +37,9 @@
                     }
                 }
                 
-                // Call the initialization function immediately after defining it
+                //Call the initialization function immediately after defining it
                 initializeApiKeys();
+                
                 function getSignature(parameters, secret) {
                     return crypto.createHmac('sha256', secret).update(timestamp + apiKey + recvWindow + parameters).digest('hex');
                 }
@@ -349,7 +350,7 @@ if (SLallowedPerDay <= 0) {
             const orderPrice = parseFloat(price);
             const stopLossprice = parseFloat(stopLoss);
             
-            const riskPerUnit = orderPrice - stopLossprice;
+            const riskPerUnit = Math.abs(orderPrice - stopLoss);
             
             // Check if risk per unit is zero to avoid division by zero error
             if (riskPerUnit <= 0) {
@@ -468,24 +469,17 @@ if (SLallowedPerDay <= 0) {
 
             
                 const cancelOrder = async (req,res) => {
-
                     let data = req.body;
+                    
                     console.log("daya",data)
                     try {
-                        const endpoint = "/v5/order/cancel";  // API endpoint for cancelling orders
-                        const response = await http_request(endpoint, "POST", `category=${data.category}&symbol=${data.symbol}`, "Cancel  Order");  // Call the API
+                        const endpoint = "/v5/order/cancel-all";  // API endpoint for cancelling orders
+                        const response = await http_request(endpoint, "POST", data, "Cancel  Order");  // Call the API
                         console.log("Order cancellation successful:", response.json());
                 
-                        // Remove the last element from the adjustedRiskArray
-                        if (adjustedRiskArray.length > 0) {
-                            const removedElement = adjustedRiskArray.pop();
-                            console.log(`Removed last element from adjustedRiskArray: ${removedElement}`);
-                        } else {
-                            console.warn("adjustedRiskArray is empty. Nothing to remove.");
-                        }
-                
+                        
                         // return response;
-                        res.send(response);
+                        return(response);
                     } catch (error) {
                         throw new Error(`Failed to cancel orders: ${error.message}`);
                     }
@@ -513,24 +507,46 @@ if (SLallowedPerDay <= 0) {
                     let data = await http_request(endpoint, "GET", 'category=linear&settleCoin=USDT', "Get Position Info");  // Call the API
                     res.send(data)
                 };
+
+
                 const setLeverage = async (req, res) => {
-                    const data = req.body;
-                    
-                    console.log("Received order data from frontend:", data);
-            
-                    
-                    try {
-                      const endpoint = "/v5/position/set-leverage"; // Replace with the correct endpoint
-                     
-                      const response = await http_request(endpoint, "POST", data, "Set Leverage");
-                  
-                      return res.status(200).json({ message: "Leverage updated successfully", response });
-                    } catch (error) {
-                      console.error("Error setting leverage:", error.message);
-                      res.status(500).json({ error: "Failed to update leverage" });
-                    }
-                };
-                
+            const data = req.body;
+        
+        console.log("Received order data from frontend:", data);
+        
+        try {
+            // Construct the query string only with the required fields
+            const queryString = `category=${data.category}&symbol=${data.symbol}&buyLeverage=${data.buyLeverage}&sellLeverage=${data.sellLeverage}`;
+
+            // Assuming http_request function accepts a query string as part of the URL
+            const endpoint = `/v5/position/set-leverage?${queryString}`; // Attach the query string to the endpoint
+
+            const response = await http_request(endpoint, "POST", data, "Set Leverage");
+
+            return res.status(200).json({ message: "Leverage updated successfully", response });
+        } catch (error) {
+            console.error("Error setting leverage:", error.message);
+            res.status(500).json({ error: "Failed to update leverage" });
+        }
+    };
+
+
+
+
+
+
+// Function to handle setting leverage
+
+
+
+
+
+
+
+
+
+
+
             const switchMarginMode = async (req, res) => {
                 const data = req.body;
                     

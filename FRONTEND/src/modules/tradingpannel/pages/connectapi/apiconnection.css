@@ -84,7 +84,7 @@
     padding: 16px 20px;
     border-radius: 8px;
     resize: none;
-    color: #fff;
+    color: var(--color-text);
     height: 150px;
     border: 1px solid #414141;
     background-color: transparent;

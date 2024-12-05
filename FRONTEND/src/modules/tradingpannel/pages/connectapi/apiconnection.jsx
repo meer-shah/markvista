@@ -51,7 +51,7 @@ const APICONNECTION = () => {
               required
             ></textarea>
           </div>
-          <button type="submit" className="form-submit-btn">CONNECT</button>
+          <button type="submit" className="form-button">CONNECT</button>
         </form>
         {message && <p className="message">{message}</p>} {/* Feedback message */}
       </div>

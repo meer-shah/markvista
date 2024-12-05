@@ -137,5 +137,5 @@
 .form-button:hover {
   background-color: var(--color-heading);
   border-color: var(--color-heading);
-  color: var(--color-white);
+  color: white;
 }
