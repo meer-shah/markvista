@@ -99,13 +99,16 @@ function Trade() {
       <div className="trade__widget-order">
         <div className="trade__widget">
           <TradingViewWidget symbol={symbol} setSymbol={setSymbol} />
-          <div>
+          
+        </div>
+        <div className="trade__order">
+        <div>
             {apiConnected}
             {apiConnected ? (
               <div className="connectaccount">
                 <div>Your account is connected</div>
                 <button className="form-button delete" onClick={handleDelete}>
-                  Delete
+                  Disconnect
                 </button>
               </div>
             ) : (
@@ -117,9 +120,8 @@ function Trade() {
               </div>
             )}
           </div>
-        </div>
-        <div className="trade__order">
           <Order symbol={symbol} setSymbol={setSymbol} />
+          
         </div>
       </div>
       {/* TradeComponent positioned at the top */}

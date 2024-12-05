@@ -3,15 +3,14 @@ import React, { useState, useEffect } from 'react';
 import './order.css';
 
 const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
-  const initialBalance = 1000; // Initial balance amount
-  const initialQuantity = 100; // Initial asset amount
+ const initialQuantity = 100; // Initial asset amount
   const [positionType, setPositionType] = useState('open');
   const [orderType, setOrderType] = useState('limit');
   const [orderPrice, setOrderPrice] = useState('');
   const [orderQuantity, setOrderQuantity] = useState(0);
   const [takeProfit, setTakeProfit] = useState('');
   const [stopLoss, setStopLoss] = useState('');
-  const [accountBalance, setAccountBalance] = useState(initialBalance); // Example balance
+  const [accountBalance, setAccountBalance] = useState(''); // Example balance
   const [assetAmount, setAssetAmount] = useState(initialQuantity); // Example asset amount
   const [quantityType, setQuantityType] = useState('USDT'); // State to track selected quantity type
   const [riskProfileName, setRiskProfileName] = useState(''); // State to hold the risk profile name
@@ -46,7 +45,29 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
       console.error('Error toggling risk profile:', error);
     }
   };
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch current balance
+        const balanceResponse = await fetch('http://localhost:4000/api/order/showusdtbalance');
+        const balanceData = await balanceResponse.json();
+  
+        if (balanceData !== undefined) {
+          setAccountBalance(balanceData); // Set the account balance
+        } else {
+          throw new Error('Invalid balance data format.');
+        }      
+      } catch (err) {
+        setError(err.message || 'Error fetching data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []); // Runs only once when the component mounts
+  
   // Fetch risk profile name from the database
   useEffect(() => {
     const fetchRiskProfiles = async () => {
@@ -92,16 +113,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
   };
 
   // Calculate order quantity based on slider percentage
-  const handleQuantitySliderChange = (value) => {
-    const percentage = parseFloat(value);
-    let quantity;
-    if (positionType === 'open') {
-      quantity = (percentage / 100) * initialBalance;
-    } else {
-      quantity = (percentage / 100) * initialQuantity;
-    }
-    setOrderQuantity(Math.max(0, quantity));
-  };
+ 
 
   // Handle order quantity input change
   const handleOrderQuantityChange = (value) => {
@@ -112,13 +124,7 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
   };
 
   // Calculate remaining balance or asset amount after setting order quantity
-  useEffect(() => {
-    if (positionType === 'open') {
-      setAccountBalance(Math.max(0, initialBalance - orderQuantity)); // Update account balance
-    } else {
-      setAssetAmount(Math.max(0, initialQuantity - orderQuantity)); // Update asset amount
-    }
-  }, [orderQuantity, positionType]);
+
 
   const handleOpenLong =async () => {
     if (parseFloat(stopLoss) >= parseFloat(orderPrice) || parseFloat(takeProfit) <= parseFloat(orderPrice)) {
@@ -201,39 +207,9 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
   };
   
 
-  // Update margin mode when user changes it
-  const updateMarginMode = async (value) => {
-    try {
-      const data = {
-        category: "linear",
-        symbol, // Ensure this has a value
-        tradeMode: value === "cross" ? 0 : 1,
-      };
-  
-      const response = await axios.post(
-        "http://localhost:4000/api/order/switch-margin-mode",
-        data, // Pass as an object
-        {
-          headers: { "Content-Type": "application/json" }, // Explicitly set headers
-        }
-      );
-  
-      if (response.status === 200) {
-        console.log("Margin mode updated successfully");
-      } else {
-        throw new Error("Failed to update margin mode.");
-      }
-    } catch (error) {
-      console.error("Error updating margin mode:", error);
-    }
-  };
   
 
-  // Handle leverage type change
-  const handleLeverageTypeChange = async (value) => {
-    setLeverageType(value); // Update local state
-    await updateMarginMode(value); // Update on backend
-  };
+
 
   // Handle leverage amount change
   const handleLeverageAmountChange = async (value) => {
@@ -246,22 +222,25 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
     <div className='main'>
       
 
-<div
+
+      <div className="crypto-leverage-container">
+      <div
 style={{
     
-    fontSize:'34px',
+    fontSize:'44px',
     display: 'flex',          // Use flexbox for centering
     justifyContent: 'center', // Center horizontally
     alignItems: 'center',     // Center vertically
-    marginTop: '0',           // Set upper margin to 0
-    height: '100%',           // Ensure it fills the parent container (optional)
+    marginTop: '5%',           // Set upper margin to 0
+    height: '100%', 
+    flexWrap:'wrap',
+    marginBottom:'10%',          // Ensure it fills the parent container (optional)
   }} className="p__heading ">{symbol}</div>
 
-      <div className="crypto-leverage-container">
         <div className="leverage-section">
 
         <div className="position-section">
-        <div className='riskprofileactive'>
+        <div>
         <div>
   <div
     style={{
@@ -317,11 +296,25 @@ style={{
         )}
 
         <div className="order-section">
-          <p className="balance-info">
-            {positionType === 'open'
-              ? `Account Balance: $${accountBalance}`
-              : `Asset Amount: ${assetAmount}`}
-          </p>
+        
+  <p className="balance-info">
+    {positionType === 'open' ? (
+      <>
+        Account Balance: 
+        <span style={{ color: 'var(--color-detailing)', fontWeight: 'bold' }}>
+        ${accountBalance}
+        </span>
+      </>
+    ) : (
+      <>
+        Asset Amount: 
+        <span style={{ color: 'var(--color-detailing)', fontWeight: 'bold' }}>
+          {assetAmount}
+        </span>
+      </>
+    )}
+  </p>
+
 
           {orderType === 'limit' && (
             <>

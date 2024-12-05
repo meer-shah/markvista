@@ -58,8 +58,8 @@
    display: flex;
    justify-content: space-between;
    align-items: center;
-    margin-top: 1.5%;
-    margin-bottom: 1.5%;
+    margin-top: 0%;
+    margin-bottom: -2%;
     padding: 20px;
     background-color: var(--color-section);
     border-radius: 8px;

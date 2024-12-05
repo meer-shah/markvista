@@ -1251,7 +1251,22 @@ const loadChart = (symbol) => {
   };
 
   return (
-    <div>
+   <div>
+  <div
+  style={{
+    fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
+    color: 'var(--color-text)', // Values should be strings
+     // Corrected to camelCase
+    margin: '0 auto', // Strings for values
+    padding: '20px', // Strings for values
+    backgroundColor: 'var(--color-section)', // Corrected to camelCase
+    borderRadius: '8px', // Corrected to camelCase
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Corrected to camelCase
+  }}
+  
+>
+ 
+
       <div style={{ position: 'relative', marginBottom: '10px', width: '100%' }}>
         <input
           type="text"
@@ -1266,7 +1281,7 @@ const loadChart = (symbol) => {
                         border: '2px solid var(--color-detailing)',
                         borderRadius: '4px',
                         fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
-                        color: 'var(--color-background)',
+                        color: 'var(--color-white)',
                         fontSize:'17px'
                       }}
         />
@@ -1307,9 +1322,14 @@ const loadChart = (symbol) => {
         className="tradingview-widget-container"
         ref={containerRef}
         id="tvchart"
-        style={{ height: '86vh', width: '100%' }}
+        style={{ height:'96vh', width: '100%'}}
       />
     </div>
+
+   </div>
+   
+   
+  
     
   );
 };

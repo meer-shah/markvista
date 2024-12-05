@@ -11,6 +11,7 @@
     display: flex;
     align-items: center;
     gap: 24px;
+    margin-bottom: 1.5%;
   }
   
   .radio-button {
@@ -32,7 +33,7 @@
     margin-bottom: 10px;
     position: relative;
     font-size: 15px;
-    color: #f2f2f2;
+    color: var(--color-text);
     font-weight: 600;
     cursor: pointer;
     text-transform: uppercase;
