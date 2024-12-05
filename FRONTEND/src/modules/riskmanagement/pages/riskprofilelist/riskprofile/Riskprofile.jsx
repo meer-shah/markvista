@@ -110,25 +110,8 @@ const Riskprofile = () => {
         ))}
       </div>
       <div className='container'>
-        <button type="button" className="custom-button" onClick={handleAddClick}>
-          <span className="custom-button__text , p__basic">Add</span>
-          <span className="custom-button__icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              stroke="currentColor"
-              height="24"
-              fill="none"
-              className="custom-svg"
-            >
-              <line y2="19" y1="5" x2="12" x1="12"></line>
-              <line y2="12" y1="12" x2="19" x1="5"></line>
-            </svg>
-          </span>
+        <button type="button" className="form-button" onClick={handleAddClick}>
+          Add
         </button>
       </div>
     </div>

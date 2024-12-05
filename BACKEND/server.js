@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const riskProfileRoutes = require('./routes/riskprofiles'); // Adjust path as necessary
 const orderRoutes = require('./routes/order'); // Adjust path as necessary
 const goalRoutes = require('./routes/goal');
+const apiConnectionRoutes = require('./routes/api');
 // Express app
 const app = express();
 
@@ -20,6 +21,8 @@ app.use((req, res, next) => {
 app.use('/api/riskprofiles', riskProfileRoutes);
 app.use('/api/order',orderRoutes );
 app.use('/api/goal',goalRoutes )
+
+app.use('/api/connection', apiConnectionRoutes); // Add the route to the application
 
 // Connect to MongoDB
 const mongoURI = process.env.MONGO_URI; // Ensure the database name is correct

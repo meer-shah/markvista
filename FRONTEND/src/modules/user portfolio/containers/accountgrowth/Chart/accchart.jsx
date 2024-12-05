@@ -50,15 +50,14 @@ const Achart = ({ data }) => {
         <YAxis />
         <Tooltip
           content={<CustomTooltip />}
-
           wrapperStyle={{
-            background: '#555',
-            color: 'var(--color-text)',
+            
+            color: 'var(--color-white)',
             fontFamily: 'var(--basic-font-family)',
             fontSize: '12px',
             padding: '6px',
           }}
-          cursor={{ stroke: '#fff', strokeWidth: 1 }}
+          cursor={{ stroke: 'var(--color-white)', strokeWidth: 1 }}
         />
         <Legend />
         <Area
@@ -78,7 +77,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     const balanceValue = typeof payload[0].value === 'number' ? payload[0].value.toFixed(2) : payload[0].value;
 
     return (
-      <div className="p-4 rounded-md" style={{ background: '#555', color: 'var(--color-text)', fontFamily: 'var(--basic-font-family)', fontSize: '12px', padding: '6px' }}>
+      <div className="p-4 rounded-md"  style={{ background: 'var(--color-section)', color: 'var(--color-text)', fontFamily: 'var(--basic-font-family)', fontSize: '10px', padding: '6px' }}>
         <p className="text-medium">{`Date: ${label}`}</p>
         <p className="text-sm">
           Account Balance:

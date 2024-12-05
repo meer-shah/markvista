@@ -102,7 +102,7 @@ const Inputpart1 = () => {
             ></textarea>
           </div>
           {/* Add other form fields similarly */}
-          <button type="submit" className="form-submit-btn">Next</button>
+          <button type="submit" className="form-button">Next</button>
         </form>
       </div>
     </div>

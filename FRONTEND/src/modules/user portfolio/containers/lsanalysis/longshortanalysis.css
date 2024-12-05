@@ -13,7 +13,7 @@
 
 .small__heading {
   font-size: 24px;
-  color: #fff;
+  
   text-align: left; /* Aligns text to the right */
   white-space: wrap; /* Prevents wrapping */
   margin-bottom: 5%; /* Adds margin to the right */

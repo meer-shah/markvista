@@ -29,7 +29,7 @@ p {
   height: 10px;
   border-radius: 5px;
   width: 100%;
-  background-color: #555;
+  background-color: var(--colour-button);
 }
 
 .line {
@@ -71,7 +71,7 @@ p {
 }
 
 .table-body tr:hover {
-  background-color: #555;
+  background-color: var(--colour-button);
 }
 
 .height {

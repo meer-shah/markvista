@@ -3,6 +3,10 @@
                 const RiskProfile = require('../models/riskprofilemodal');
                 const AdjustedRisk = require('../models/riskprofilemodal'); // Import the AdjustedRisk model
                 const DailyLoss = require('../models/riskprofilemodal'); ; // Adjust path according to where you defined the model
+                const ApiConnection = require('../models/ApiConnection');
+
+               
+
 
                 //real account
                 // const url = 'https://api.bybit.com';  // API base URL
@@ -10,13 +14,31 @@
                 // const secret = "6i32BfhTK14YbE8OttN6c8uBQXqbhe7C6GYJ";  // Your secret key
                 // //demo account 
                 const url = 'https://api-demo.bybit.com';  // API base URL
-                const apiKey = "Y1rRqFvBHiIS3YAlcB";  // Your API key
-                const secret = "gB6SF4CKIixKPBtxEKSeA3J1jpYlDmQLwzkN";  // Your secret key
-
+                // const apiKey = "Y1rRqFvBHiIS3YAlcB";  // Your API key
+                // const secret = "gB6SF4CKIixKPBtxEKSeA3J1jpYlDmQLwzkN";  // Your secret key
+                // const { apiKey, secret } =  getApiKeysFromDB(); // Dynamically fetch keys from DB
+                let apiKey = null;
+                let secret = null;
                 const recvWindow = 50000000000;  // Maximum window for receiving the response (in ms)
                 const timestamp = Date.now().toString();  // Current timestamp for signing requests
 
-            
+                async function initializeApiKeys() {
+                    try {
+                        const apiData = await ApiConnection.findOne();
+                        if (!apiData) {
+                            throw new Error("API keys not found in the database.");
+                        }
+                        apiKey = apiData.apiKey;
+                        secret = apiData.secretKey;
+                        console.log("API keys initialized successfully!");
+                    } catch (error) {
+                        console.error("Error initializing API keys:", error.message);
+                        throw error;
+                    }
+                }
+                
+                // Call the initialization function immediately after defining it
+                initializeApiKeys();
                 function getSignature(parameters, secret) {
                     return crypto.createHmac('sha256', secret).update(timestamp + apiKey + recvWindow + parameters).digest('hex');
                 }
@@ -45,7 +67,7 @@
                         'X-BAPI-SIGN-TYPE': '2',
                         'X-BAPI-SIGN': sign,
                         'X-BAPI-API-KEY': apiKey,
-                        'X-BAPI-TIMESTAMP': timestamp,
+                        'X-BAPI-TIMESTAMP':  timestamp.toString(),
                         'X-BAPI-RECV-WINDOW': recvWindow.toString(),
                     };
 

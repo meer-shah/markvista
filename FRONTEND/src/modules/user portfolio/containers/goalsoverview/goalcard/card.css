@@ -1,5 +1,5 @@
 .card {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-white);
     border-radius: 8px;
     padding: 16px;
     width: 190px;
@@ -14,7 +14,7 @@
   .heading {
     font-size: 1rem;
     margin-bottom: 8px;
-    color: white;
+    color: var(--color-white);
   }
   
   .total-profit-label {

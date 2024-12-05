@@ -1,12 +1,16 @@
 .app_rp {
-    display: flex;
-    justify-content: space-between;
-    border-radius: 10px;
-    background-color: var(--color-section);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 1%;
-    margin: 1% 4%;
-  }
+  display: flex;
+  justify-content: space-between;
+  border-radius: 10px;
+  background-color: var(--color-section);
+  box-shadow: 0 0 10px rgba(41, 41, 41, 0.1);
+  padding: 1%;
+  margin: 1% 4%;
+  
+  /* Adding border */
+  border: 2px solid var(--color-detailing); /* Example: 2px solid border with the color of the heading */
+}
+
   
   .name {
     color: var(--color-text);
@@ -47,7 +51,7 @@
     margin: 0% 5%;
     height:190%;
    
-    background-color:var(--color-text);
+    background-color:var(--color-detailing);
     border-radius: 50%;
    
   }

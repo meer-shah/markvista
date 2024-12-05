@@ -77,31 +77,32 @@ const LSComponent = () => {
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
           <YAxis />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="name"
+           />
           <Tooltip
             content={<CustomTooltip />}
             wrapperStyle={{
-              background: "#555",
-              color: "var(--color-text)",
+              
+              color: "var(--color-white)",
               fontFamily: "var(--basic-font-family)",
               fontSize: "12px",
               padding: "6px",
             }}
-            cursor={{ stroke: "#fff", strokeWidth: 1 }}
+            cursor={{ stroke: "var(--color-white)", strokeWidth: 1 }}
           />
           <Legend />
           <Area
             type="monotone"
             dataKey="LONG"
-            stroke="#298969"
-            fill="#298969"
+            stroke="var(--color-profit)"
+            fill="var(--color-profit)"
             stackId="1"
           />
           <Area
             type="monotone"
             dataKey="SHORT"
-            stroke="#902424"
-            fill="#902424"
+            stroke="var(--color-loss)"
+            fill="var(--color-loss)"
             stackId="1"
           />
         </AreaChart>
@@ -114,16 +115,11 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div
-        className="p-4 rounded-md"
-        style={{
-          background: "#555",
-          color: "var(--color-text)",
-          fontFamily: "var(--basic-font-family)",
-          fontSize: "12px",
-          padding: "6px",
-        }}
+        
+        
       >
-        <p className="text-medium">{`Date: ${label}`}</p>
+        <div className="p-4 rounded-md" style={{ background: 'var(--color-section)', color: 'var(--color-text)', fontFamily: 'var(--basic-font-family)', fontSize: '10px', padding: '6px' }}>
+        <p className="text-medium" >{`Date: ${label}`}</p>
         <p className="text-sm">
           LONG:
           <span className="ml-2">${payload[0].value}</span>
@@ -132,6 +128,8 @@ const CustomTooltip = ({ active, payload, label }) => {
           SHORT:
           <span className="ml-2">${payload[1].value}</span>
         </p>
+        </div>
+        
       </div>
     );
   }

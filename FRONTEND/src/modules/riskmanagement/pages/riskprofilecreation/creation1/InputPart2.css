@@ -90,8 +90,8 @@
     visibility: hidden;
     opacity: 0;
     width: 200px;
-    background-color: #555;
-    color: var(--color-text);
+    background-color: var(--color-white);
+    color: var(--color-section);
     text-align: center;
     border-radius: 5px;
     padding: 5px;

@@ -1224,7 +1224,7 @@ const loadChart = (symbol) => {
             interval: '5',
             timezone: 'Asia/Karachi',
             style: '1',
-            theme: 'dark',
+            theme: 'light',
             locale: 'en',
             withdateranges: true,
             hide_side_toolbar: false,
@@ -1260,13 +1260,14 @@ const loadChart = (symbol) => {
           onChange={handleSearchChange}
           onFocus={() => setIsDropdownOpen(true)}
           onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)} // Delay to allow clicking
-          style={{
-                        padding: '8px',
+          style={{      background: 'var(--color-section)',
+                        padding: '1.2%',
                         width: '100%',
-                        border: '1px solid #ccc',
+                        border: '2px solid var(--color-detailing)',
                         borderRadius: '4px',
                         fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
                         color: 'var(--color-background)',
+                        fontSize:'17px'
                       }}
         />
         {isDropdownOpen && filteredSymbols.length > 0 && (
@@ -1277,14 +1278,14 @@ const loadChart = (symbol) => {
               listStyle: 'none',
               margin: 0,
               padding: '10px',
-              background: '#fff',
-              border: '1px solid #ccc',
+              background: 'var(--colour-button)',
+              border: '1.5px solid var(--color-white)',
               borderRadius: '4px',
               maxHeight: '200px',
               overflowY: 'auto',
               width: '100%',
               fontFamily: 'var(--basic-font-family)', // Corrected to camelCase
-                        color: 'var(--color-background)'
+                        color: 'var(--color-white)'
             }}
           >
             {filteredSymbols.map((sym) => (
