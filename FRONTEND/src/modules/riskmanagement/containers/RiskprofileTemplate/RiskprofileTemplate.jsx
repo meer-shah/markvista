@@ -121,7 +121,7 @@ import see from '../../../../assets/see.png';
 import description from '../../../../assets/paper.png';
 import { useNavigate } from 'react-router-dom';
 
-const RiskprofileTemplate = ({ id, title, onDelete, isChecked, onToggle, defaultProfile }) => {
+const RiskprofileTemplate = ({ id, title, onDelete, isChecked, onToggle, defaultProfile, value }) => {
   const navigate = useNavigate();
 
   const navigateToDescription = () => {
@@ -138,7 +138,6 @@ const RiskprofileTemplate = ({ id, title, onDelete, isChecked, onToggle, default
         throw new Error('Network response was not ok');
       }
 
-      // Call onDelete to update the parent component state
       onDelete(id);
     } catch (error) {
       console.error('Error deleting risk profile:', error);
@@ -170,11 +169,12 @@ const RiskprofileTemplate = ({ id, title, onDelete, isChecked, onToggle, default
             id="toggleButton"
             type="checkbox"
             checked={isChecked}
-            onChange={onToggle} // Toggle the switch when clicked
+            value={value}
+            onChange={onToggle} 
           />
           <div className="slider">
             <div className="circle">
-              {isChecked ? (
+              {isChecked  ? (
                 <svg
                   className="checkmark"
                   xmlns="http://www.w3.org/2000/svg"

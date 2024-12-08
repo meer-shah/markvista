@@ -216,7 +216,8 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
     setLeverageAmount(value); // Update local state
     await updateLeverageAmount(value); // Update on backend
   };
-
+  
+  
 
   return (
     <div className='main'>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import{ RiskprofileTemplate }  from '../../../containers'; // Adjust the import path if needed
 import './Riskprofile.css';
+import axios from 'axios';
 
 
 const Riskprofile = () => {
@@ -41,11 +42,20 @@ const Riskprofile = () => {
 
   const [activeProfileId, setActiveProfileId] = useState(null);
 
+
+
+  
+
+
+
+
+
   const handleToggle = async (id) => {
     const newActiveId = activeProfileId === id ? null : id;
+
   
     try {
-      const payload = { ison: newActiveId !== null }; // Set 'ison' to true or false based on toggle
+      const payload = { ison: newActiveId !== null }; 
   
       // Make the PUT request to activate/deactivate the risk profile
       const response = await fetch(`http://localhost:4000/api/riskprofiles/${id}/activate`, {

@@ -19,7 +19,7 @@
                 // const { apiKey, secret } =  getApiKeysFromDB(); // Dynamically fetch keys from DB
                 let apiKey = null;  // Your API key
                 let secret = null ;  // Your secret key
-                const recvWindow = 50000000;  // Maximum window for receiving the response (in ms)
+                const recvWindow = 5000000;  // Maximum window for receiving the response (in ms)
                 const timestamp = Date.now().toString();  // Current timestamp for signing requests
 
                 async function initializeApiKeys() {
@@ -468,23 +468,36 @@ if (SLallowedPerDay <= 0) {
                 };
 
             
-                const cancelOrder = async (req,res) => {
-                    let data = req.body;
-                    
-                    console.log("daya",data)
-                    try {
-                        const endpoint = "/v5/order/cancel-all";  // API endpoint for cancelling orders
-                        const response = await http_request(endpoint, "POST", data, "Cancel  Order");  // Call the API
-                        console.log("Order cancellation successful:", response.json());
+                const cancelOrder = async (req, res) => {
+                    const { orderLinkId, symbol } = req.body; // Extract orderLinkId and symbol from request body
                 
-                        
-                        // return response;
-                        return(response);
+                    try {
+                        // Define the endpoint and construct the data payload
+                        const endpoint = "/v5/order/cancel"; 
+                        const data = JSON.stringify({
+                            category: "linear",
+                            symbol: symbol,
+                            orderLinkId: orderLinkId,
+                        });
+                
+                        // res.send("Payload being sent:", data);
+                        console.log("hello", data)
+                
+                        // Make the HTTP request
+                        const response = await http_request(endpoint, "POST", data, "Cancel");
+                
+                        // Log and return the response
+                        res.send(200, response);
+                        return response;
                     } catch (error) {
-                        throw new Error(`Failed to cancel orders: ${error.message}`);
+                        res.send(500, error.message);
+                        throw new Error(`Failed to cancel order: ${error.message}`);
                     }
                 };
                 
+
+              
+               
 
             
             
@@ -510,25 +523,35 @@ if (SLallowedPerDay <= 0) {
 
 
                 const setLeverage = async (req, res) => {
-            const data = req.body;
-        
-        console.log("Received order data from frontend:", data);
-        
-        try {
-            // Construct the query string only with the required fields
-            const queryString = `category=${data.category}&symbol=${data.symbol}&buyLeverage=${data.buyLeverage}&sellLeverage=${data.sellLeverage}`;
-
-            // Assuming http_request function accepts a query string as part of the URL
-            const endpoint = `/v5/position/set-leverage?${queryString}`; // Attach the query string to the endpoint
-
-            const response = await http_request(endpoint, "POST", data, "Set Leverage");
-
-            return res.status(200).json({ message: "Leverage updated successfully", response });
-        } catch (error) {
-            console.error("Error setting leverage:", error.message);
-            res.status(500).json({ error: "Failed to update leverage" });
-        }
-    };
+                    try {
+                        // Extract necessary fields from the request body
+                        const { symbol, buyLeverage, sellLeverage } = req.body;
+                
+                        // Define the endpoint
+                        const endpoint = "/v5/position/set-leverage";
+                
+                        // Construct the payload
+                        const data = JSON.stringify({
+                            category: "linear",
+                            symbol,
+                            buyLeverage,
+                            sellLeverage,
+                        });
+                
+                        console.log("Payload being sent:", data);
+                
+                        // Make the HTTP request
+                        const response = await http_request(endpoint, "POST", data, "Set Leverage");
+                
+                        // Return the response
+                        res.status(200).json({ message: "Leverage updated successfully", response });
+                        return response;
+                    } catch (error) {
+                        console.error("Error setting leverage:", error.message);
+                        res.status(500).json({ error: "Failed to update leverage", details: error.message });
+                    }
+                };
+                
 
 
 

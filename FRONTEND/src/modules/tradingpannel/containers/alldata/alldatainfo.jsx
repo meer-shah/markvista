@@ -324,7 +324,7 @@ const TradeComponent = () => {
     
 
     
-    const intervalId = setInterval(fetchData, 3000);
+    const intervalId = setInterval(fetchData, 30000);
 
     // Cleanup the interval on component unmount
     return () => clearInterval(intervalId);
@@ -343,35 +343,48 @@ const TradeComponent = () => {
     setSelectedOrder({})
   };
   const confirmCancel = async () => {
-    console.log("selected", selectedOrder);
-    
-    // Construct the data as an object, not as a query string
-    let data = {
-      category: 'linear',
-        symbol: selectedOrder?.symbol,
-        
-        
-        baseCoin: 'null',
-        settleCoin: 'null'
-       
-    };
-    console.log(selectedOrder?.symbol);
+    try {
+        console.log("Selected order:", selectedOrder);
 
-    // Send the data as a JSON object in the request body
-    let response = await fetch('http://localhost:4000/api/order/cancel-order', {
-        method: 'POST', // HTTP method
-        headers: {
-            'Content-Type': 'application/json', // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Convert data to JSON string
-    });
-    
-    // Log the response from the server
-    console.log(await response.json());
-    
-    setShowConfirmationModal(false);
-    setSelectedOrder({});
+        // Construct the data payload based on the backend requirements
+        const data = {
+            category: "linear",
+            symbol: selectedOrder?.symbol,
+            orderLinkId: selectedOrder?.orderLinkId, // Include orderLinkId
+        };
+
+        console.log("Payload being sent:", data);
+
+        // Make the API call
+        const response = await fetch('http://localhost:4000/api/order/cancel-order', {
+            method: 'POST', // HTTP method
+            headers: {
+                'Content-Type': 'application/json', // Set content type to JSON
+            },
+
+            body: JSON.stringify(data), // Send data as JSON
+        });
+
+
+        // Handle the response
+        const responseData = await response.json();
+        console.log("Response from server:", responseData);
+
+        if (response.ok) {
+            alert("Order canceled successfully!");
+        } else {
+            alert(`Failed to cancel order: ${responseData?.message || "Unknown error"}`);
+        }
+    } catch (error) {
+        console.error("Error canceling order:", error);
+        alert("An error occurred while canceling the order. Please try again.");
+    } finally {
+        // Reset the modal and selected order
+        setShowConfirmationModal(false);
+        setSelectedOrder({});
+    }
 };
+
 
   return (
     <div className="trade-container">
