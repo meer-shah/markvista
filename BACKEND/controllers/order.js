@@ -297,7 +297,10 @@ if (SLallowedPerDay <= 0) {
                 riskProfile.consecutiveWins = 0;
                 riskProfile.consecutiveLosses = 0;
             }
-    
+            if (consecutiveWins === 0 && consecutiveLosses === 0) {
+                console.log("No consecutive wins or losses. Treating as first trade.");
+                isFirstTrade = true;
+            }
             // If it's the first trade or we need to reset, use only the initial risk
             if (isFirstTrade) {
                 adjustedRisk = initialRisk;
@@ -473,27 +476,55 @@ if (SLallowedPerDay <= 0) {
                 
                     try {
                         // Define the endpoint and construct the data payload
-                        const endpoint = "/v5/order/cancel"; 
+                        const endpoint = "/v5/order/cancel";
                         const data = JSON.stringify({
                             category: "linear",
                             symbol: symbol,
                             orderLinkId: orderLinkId,
                         });
                 
-                        // res.send("Payload being sent:", data);
-                        console.log("hello", data)
+                        console.log("Payload being sent:", data);
                 
                         // Make the HTTP request
                         const response = await http_request(endpoint, "POST", data, "Cancel");
                 
-                        // Log and return the response
-                        res.send(200, response);
-                        return response;
+                        // Check if the order cancellation was successful
+                        if (response.retMsg === "OK") {
+                            console.log("Order cancellation successful:", response);
+                
+                            // Fetch the active risk profile
+                            const riskProfile = await RiskProfile.findOne({ ison: true });
+                            if (!riskProfile) throw new Error("No active risk profile found.");
+                
+                            // Update the current risk to the previous risk
+                            riskProfile.currentrisk = riskProfile.previousrisk;
+                
+                            // Decrement consecutive wins or losses
+                            if (riskProfile.consecutiveWins > 0) {
+                                riskProfile.consecutiveWins -= 1;
+                                console.log("Decremented consecutiveWins by 1.");
+                            } else if (riskProfile.consecutiveLosses > 0) {
+                                riskProfile.consecutiveLosses -= 1;
+                                console.log("Decremented consecutiveLosses by 1.");
+                            } else {
+                                console.log("No consecutive wins or losses to decrement.");
+                            }
+                
+                            // Save the updated risk profile
+                            await riskProfile.save();
+                            console.log("Risk profile updated successfully.");
+                        } else {
+                            throw new Error("Failed to cancel the order or invalid response from API.");
+                        }
+                
+                        // Send the successful response
+                        res.status(200).json({ message: "Order canceled successfully", response });
                     } catch (error) {
-                        res.send(500, error.message);
-                        throw new Error(`Failed to cancel order: ${error.message}`);
+                        console.error("Error in cancelOrder:", error.message);
+                        res.status(500).json({ error: "Failed to cancel order", details: error.message });
                     }
                 };
+                
                 
 
               
