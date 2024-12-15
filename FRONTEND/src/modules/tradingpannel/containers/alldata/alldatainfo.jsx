@@ -324,7 +324,7 @@ const TradeComponent = () => {
     
 
     
-    const intervalId = setInterval(fetchData, 30000);
+    const intervalId = setInterval(fetchData, 3000);
 
     // Cleanup the interval on component unmount
     return () => clearInterval(intervalId);
