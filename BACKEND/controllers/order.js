@@ -96,7 +96,7 @@ async function http_reques(endpoint, method, data, Info) {
 
 // Define an array to store adjusted risk values
 let adjustedRiskArray = [];
-const MAX_RETRIES = 3;  // Maximum retry attempts
+const MAX_RETRIES = 5;  // Maximum retry attempts
 const RETRY_DELAY = 3000;  // Retry delay in milliseconds (3 seconds)
 
 async function http_request(endpoint, method, data, Info) {
