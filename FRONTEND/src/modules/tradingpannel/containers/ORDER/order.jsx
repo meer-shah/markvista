@@ -145,10 +145,25 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
         stopLoss,
 
       }
-      console.log(data)
-      const response = await axios.post("http://localhost:4000/api/order/place-order",data)
-      console.log(response.data)
-      alert('Open Long Position');
+      // console.log(data)
+      // const response = await axios.post("http://localhost:4000/api/order/place-order",data)
+      // console.log(response.data)
+      // alert('Open Long Position');
+      try {
+        const response = await axios.post("http://localhost:4000/api/order/place-order", data);
+        console.log(response.data);
+        
+        if (response.data && response.data.status === 'success') {
+          alert('Open Long Position Successful');
+          console.log('Order placed successfully:', response.data);
+        } else {
+          alert(`Order failed:'CONFLICT WITH EXISTING RISK PROFILE`);
+        }
+      } catch (error) {
+        console.error('Error placing order:', error);
+        alert(`Error placing order: CONFLICT WITH EXISTING RISK PROFILE`);
+      }
+    
     }
   };
 
@@ -171,14 +186,26 @@ const Order = ({ id, title, onDelete , symbol , setSymbol}) => {
         
 
       }
-      console.log(data)
-      const response = await axios.post("http://localhost:4000/api/order/place-order",data)
-      console.log(response.data)
+      try {
+        const response = await axios.post("http://localhost:4000/api/order/place-order", data);
+        console.log(response.data);
+        
+        if (response.data && response.data.status === 'success') {
+          alert('Open Short Position Successful');
+          console.log('Order placed successfully:', response.data);
+        } else {
+          alert(`Order failed: CONFLICT WITH EXISTING RISK PROFILE`);
+        }
+      } catch (error) {
+        console.error('Error placing order:', error);
+        alert(`Error placing order:  'CONFLICT WITH EXISTING RISK PROFILE`);
+      }
     
-    
-      alert('Open Short Position');
     }
+    
   };
+
+
   const updateLeverageAmount = async (value) => {
     try {
       const data = {
